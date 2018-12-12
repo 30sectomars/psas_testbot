@@ -1,0 +1,5 @@
+Der Ordner "dipole_chamber" muss in folgendes Verzeichnis kopiert werden:
+
+/home/user/.gazebo/models
+
+Der Punkt zeigt an, dass der Ordner versteckt ist. Im Home-Verzeichnis kann man den Ordner mits strg+h sichtbar machen.

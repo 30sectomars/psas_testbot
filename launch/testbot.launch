@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="testbot" name="kineamtic" type="kinematic.py" >
+	  <param name="scale" value="1.0" />
+  </node>
+
+  <node pkg="joy" name="robot_joy" type="joy_node" respawn="true" />
+
+  <node pkg="testbot" name="teleop" type="teleop.py" />
+
+  <node pkg="testbot" name="testbot" type="testbot.py" />
+
+  <node name="imu" pkg="testbot" type="complementary_filter.py" output="screen"/>
+
+  <node pkg="rosserial_xbee" name="xbee" type="xbee_network.py" args="/dev/ttyUSB0 1" output="screen" />
+
+  <!-- Show in Rviz   -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find testbot)/launch/rviz_imu_config.rviz"/>
+
+</launch>

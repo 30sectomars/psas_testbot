@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="testbot">
+
+  <!-- PROPERTY LIST -->
+    <xacro:property name="scaling" value="3" />
+    <xacro:property name="module_length1" value="${scaling * 0.159}" />
+    <xacro:property name="module_length2" value="${scaling * 0.171}" />
+    <xacro:property name="module_length3" value="${scaling * 0.164}" />
+    <xacro:property name="module_length4" value="${scaling * 0.159}" />
+    <xacro:property name="module_width" value="${scaling * 0.05}" />
+    <xacro:property name="module_height" value="${scaling * 0.02}" />
+    <xacro:property name="wheel_radius" value="${scaling * 0.02}" />
+    <xacro:property name="wheel_thickness" value="${scaling * 0.001}" />
+    <xacro:property name="dist_wheel_joint" value="${scaling * 0.005}" />
+    <xacro:property name="wheel_mass" value="${scaling * scaling * scaling * 0.02}" />
+    <xacro:property name="module_mass" value="${scaling * scaling * scaling * 0.2}" />
+
+
+<!-- Colors -->
+  <material name="yellow">
+    <color rgba="1 1 0 1"/>
+  </material>
+
+  <material name="red">
+    <color rgba="1 0 0 1"/>
+  </material>
+
+  <material name="green">
+    <color rgba="0 1 0 1" />
+  </material>
+
+
+  <link name="module_1">
+    <inertial>
+      <origin xyz="${-module_length1 / 2} 0 0" rpy="${pi/2} 0 0"/>
+      <mass value="${module_mass}"/>
+      <inertia  ixx="${module_mass * (module_height * module_height + module_width * module_width)/12}" ixy="0" ixz="0"
+                iyy="${module_mass * (module_length1 * module_length1 + module_width * module_width)/12}" iyz="0"
+                izz="${module_mass * (module_height * module_height + module_length1 * module_length1)/12}" />
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="${module_length1} ${module_width} ${module_height}"/>
+      </geometry>
+      <origin xyz="${-module_length1 / 2} 0 0" rpy="0 0 0"/>
+      <material name="red"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${module_length1} ${module_width} ${module_height}"/>
+      </geometry>
+      <origin xyz="${-module_length1 / 2} 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <gazebo reference="module_1">
+      <material>Gazebo/Red</material>
+  </gazebo>
+
+<!-- Macros -->
+
+  <xacro:macro name="module" params="number length parent_length">
+    <link name="module_${number}">
+      <inertial>
+        <origin xyz="${-length / 2} 0 0" rpy="${pi/2} 0 0"/>
+        <mass value="${module_mass}"/>
+        <inertia  ixx="${module_mass * (module_height * module_height + module_width * module_width)/12}" ixy="0" ixz="0"
+                  iyy="${module_mass * (length * length + module_width * module_width)/12}" iyz="0"
+                  izz="${module_mass * (module_height * module_height + length * length)/12}" />
+      </inertial>
+      <visual>
+        <geometry>
+          <box size="${length} ${module_width} ${module_height}"/>
+        </geometry>
+        <origin xyz="${-length / 2} 0 0" rpy="0 0 0"/>
+        <xacro:if value="${number%2 == 1}">
+          <material name="red"/>
+        </xacro:if>
+        <xacro:if value="${number%2 == 0}">
+          <material name="yellow"/>
+        </xacro:if>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="${length} ${module_width} ${module_height}"/>
+        </geometry>
+        <origin xyz="${-length / 2} 0 0" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <gazebo reference="module_${number}">
+      <xacro:if value="${number%2 == 1}">
+        <material>Gazebo/Red</material>
+      </xacro:if>
+      <xacro:if value="${number%2 == 0}">
+        <material>Gazebo/Yellow</material>
+      </xacro:if>
+    </gazebo>
+
+    <joint name="joint${number - 1}" type="revolute">
+      <limit lower="-1.5708" upper="1.5708" effort="10" velocity="7.5" />
+      <parent link="module_${number - 1}" />
+      <child link="module_${number}" />
+      <origin xyz="${-parent_length} 0 0" />
+      <axis xyz="0 0 1" />
+    </joint>
+
+    <transmission name="tran${number - 1}">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="joint${number - 1}">
+          <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor${number - 1}">
+          <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+  </xacro:macro>
+
+
+  <xacro:macro name="wheel" params="number module position">
+    <link name="wheel_${number}">
+      <inertial>
+        <xacro:if value="${number%2 == 1}">
+          <origin xyz="0 ${wheel_thickness / 2} 0" rpy="${pi / 2} 0 0" />
+        </xacro:if>
+        <xacro:if value="${number%2 == 0}">
+          <origin xyz="0 -${wheel_thickness / 2} 0" rpy="${pi / 2} 0 0" />
+        </xacro:if>
+        <mass value="${wheel_mass}"/>
+        <inertia  ixx="${wheel_mass * (3 * wheel_radius * wheel_radius + 0.005*0.005)/12}" ixy="0" ixz="0"
+                  iyy="${wheel_mass * (3 * wheel_radius * wheel_radius + 0.005*0.005)/12}" iyz="0"
+                  izz="${wheel_mass * wheel_radius * wheel_radius /2}" />
+      </inertial>
+      <visual>
+        <geometry>
+          <cylinder length="${wheel_thickness}" radius="${wheel_radius}" />
+        </geometry>
+        <material name="green"/>
+        <xacro:if value="${number%2 == 1}">
+          <origin xyz="0 ${wheel_thickness / 2} 0" rpy="${pi / 2} 0 0" />
+        </xacro:if>
+        <xacro:if value="${number%2 == 0}">
+          <origin xyz="0 -${wheel_thickness / 2} 0" rpy="${pi / 2} 0 0" />
+        </xacro:if>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${wheel_thickness}" radius="${wheel_radius}" />
+        </geometry>
+        <xacro:if value="${number%2 == 1}">
+          <origin xyz="0 ${wheel_thickness / 2} 0" rpy="${pi / 2} 0 0" />
+        </xacro:if>
+        <xacro:if value="${number%2 == 0}">
+          <origin xyz="0 -${wheel_thickness / 2} 0" rpy="${pi / 2} 0 0" />
+        </xacro:if>
+      </collision>
+    </link>
+
+    <joint name="wheeljoint_${number}" type="continuous">
+      <parent link="module_${module}" />
+      <child link="wheel_${number}" />
+      <xacro:if value="${number%2 == 1}">
+        <origin xyz="${position} ${module_width / 2 + 3*0.004} -${dist_wheel_joint}"/>
+      </xacro:if>
+      <xacro:if value="${number%2 == 0}">
+        <origin xyz="${position} -${module_width / 2 + 3*0.004} -${dist_wheel_joint}"/>
+      </xacro:if>
+      <axis xyz="0 1 0" />
+    </joint>
+
+    <gazebo reference="wheel_${number}">
+        <material>Gazebo/Green</material>
+        <mu1 value="1.0"/>
+        <!-- <mu2 value="1.0"/>
+        <kp  value="10000000.0" />
+        <kd  value="1.0" />
+        <fdir1 value="1 0 0"/> -->
+    </gazebo>
+
+    <transmission name="wheeltrans_${number}">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="wheeljoint_${number}">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="wheeljoint_${number}_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+  </xacro:macro>
+
+
+
+  <!-- ros_control plugin -->
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace>/testbot</robotNamespace>
+  </plugin>
+</gazebo>
+
+
+
+<transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+
+
+<!-- Robot -->
+
+<!-- BASE-FOOTPRINT -->
+<!-- base_footprint is a fictitious link(frame) that is on the ground right below module_1 origin -->
+  <link name="base_footprint">
+     <visual>
+       <origin xyz="0 0 0" rpy="0 0 0" />
+       <geometry>
+         <box size="0.001 0.001 0.001" />
+       </geometry>
+     </visual>
+  </link>
+
+  <joint name="fixed" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="module_1"/>
+    <origin xyz="0 0 0.075" rpy="0 0 0" />
+  </joint>
+
+  <xacro:module number="2" length="${module_length2}" parent_length="${module_length1}"/>
+  <xacro:module number="3" length="${module_length3}" parent_length="${module_length2}"/>
+  <xacro:module number="4" length="${module_length4}" parent_length="${module_length3}"/>
+
+  <xacro:wheel number="1" module="1" position="${- scaling*0.015}" />
+  <xacro:wheel number="2" module="1" position="${- scaling*0.015}" />
+
+  <xacro:wheel number="3" module="2" position="${-module_length2 + scaling*0.043}" />
+  <xacro:wheel number="4" module="2" position="${-module_length2 + scaling*0.043}" />
+
+  <xacro:wheel number="5" module="3" position="${- scaling*0.026}" />
+  <xacro:wheel number="6" module="3" position="${- scaling*0.026}" />
+
+  <xacro:wheel number="7" module="4" position="${-module_length4 + scaling*0.015}" />
+  <xacro:wheel number="8" module="4" position="${-module_length4 + scaling*0.015}" />
+
+
+
+  <link name="imu_link">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="green"/>
+    </visual>
+  </link>
+
+  <joint name="fixed_imu" type="fixed">
+    <parent link="module_1"/>
+    <child link="imu_link"/>
+    <origin xyz="-0.15 0 0.03" rpy="0 0 0" />
+  </joint>
+
+  <gazebo>
+    <plugin name="imu" filename="libhector_gazebo_ros_imu.so">
+      <updateRate>50.0</updateRate>
+      <robotNamespace>/testbot</robotNamespace>
+      <bodyName>imu_link</bodyName>
+      <topicName>imu</topicName>
+      <rateGaussianNoise>0.001 0.001 0.001</rateGaussianNoise>
+      <accelGaussianNoise>0.001 0.001 0.001</accelGaussianNoise>
+      <gaussianNoise>0.001</gaussianNoise>
+    </plugin>
+  </gazebo>
+
+</robot>

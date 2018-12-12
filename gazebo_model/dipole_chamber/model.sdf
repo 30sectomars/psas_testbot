@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+<sdf version='1.4'>
+  <model name="dipole_chamber">
+    <static>true</static>
+
+      <link name='modul1'>
+      <!--  <pose>0 0 0.02 0 0 0</pose> -->
+
+        <collision name='modul1_collision'>
+          <pose>0.0 0 0.1 0 3.1415 -1.570796</pose>
+          <geometry>
+            <mesh>
+              <uri>model://dipole_chamber/meshes/dipole.dae</uri>
+              <scale>0.003 0.003 0.003</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name='modul1_visual'>
+          <pose>0.0 0 0.1 0 3.1415 -1.570796</pose>
+          <geometry>
+            <mesh>
+              <uri>model://dipole_chamber/meshes/dipole.dae</uri>
+              <scale>0.003 0.003 0.003</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+
+  </model>
+</sdf>

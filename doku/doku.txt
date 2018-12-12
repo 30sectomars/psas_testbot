@@ -1,0 +1,2 @@
+Install: sudo apt-get install ros-kinetic-gazebo-ros-pkgs ros-kinetic-gazebo-ros-control
+Install: sudo apt-get install ros-kinetic-joint-state-controller ros-kinetic-effort-controllers
