@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
-
 <launch>
+
+  <param name="/use_simulation" type="bool" value="true" />
 
   <arg name="world_name" default="$(find testbot)/world/dipole.world"/>
 
@@ -30,7 +30,7 @@
   </include>
 
   <!-- urdf xml robot description loaded on the Parameter Server-->
-  <param name="robot_description" command="$(find xacro)/xacro '$(find testbot)/urdf/testbot.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find testbot)/urdf/testbot.xacro'" />
 
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
@@ -38,6 +38,10 @@
     args="-urdf -model testbot -param robot_description
           -x $(arg x) -y $(arg y) -z $(arg z)
           -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
+
+  <node name="complementary_filter" pkg="testbot" type="complementary_filter.py" />
+
+  <node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>
 
   <!--<include file="$(find testbot)/launch/control_testbot.launch" />
 

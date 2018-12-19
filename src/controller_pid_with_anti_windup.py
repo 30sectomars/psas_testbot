@@ -9,8 +9,14 @@ import rospy
 # Ros messages
 from std_msgs.msg import Float64
 from std_msgs.msg import Float32MultiArray
+from sensor_msgs.msg import Imu
 
 LOOP_RATE_IN_HZ = 100
+
+if rospy.has_param('/use_simulation'):
+	SIMULATION = rospy.get_param('/use_simulation')
+else:
+	SIMULATION = False
 
 class Controller:
 
@@ -41,10 +47,14 @@ class Controller:
 
 		self.dt = 1.0 / LOOP_RATE_IN_HZ
 		rospy.loginfo("dt = %f", self.dt)
+		rospy.loginfo(SIMULATION)
 
 		self.delta1 = 0.0
 
-		self.imu_sub = rospy.Subscriber('/testbot/imu', Float32MultiArray, self.imu_callback)
+		if SIMULATION:
+			self.imu_sub = rospy.Subscriber('/imu', Imu, self.imu_callback)
+		else:
+			self.imu_sub = rospy.Subscriber('/testbot/imu', Float32MultiArray, self.imu_callback)
 
 		self.delta1_pub = rospy.Publisher('/testbot/delta1', Float64, queue_size=10)
 
@@ -76,24 +86,31 @@ class Controller:
 		del self.y[-1]
 		del self.u[-1]
 
-		rospy.loginfo(self.y)
-		rospy.loginfo(self.u)
+		#rospy.loginfo(self.y)
+		#rospy.loginfo(self.u)
 
 	def publish_all(self):
 		self.delta1_pub.publish(self.delta1)
 
 	def imu_callback(self, msg):
-		self.gyro_x = msg.data[0]
-		self.gyro_y = msg.data[1]
-		self.gyro_z = msg.data[2]
+		if SIMULATION:
+			self.gyro_x = msg.angular_velocity.x
+			self.gyro_y = -msg.angular_velocity.y
+			self.gyro_z = -msg.angular_velocity.z
+			self.accel_x = msg.linear_acceleration.x
+			self.accel_y = -msg.linear_acceleration.y
+			self.accel_z = -msg.linear_acceleration.z
+		else:
+			self.gyro_x = msg.data[0]
+			self.gyro_y = msg.data[1]
+			self.gyro_z = msg.data[2]
+			self.accel_x = msg.data[3]
+			self.accel_y = msg.data[4]
+			self.accel_z = msg.data[5]
 
-		self.accel_x = msg.data[3]
-		self.accel_y = msg.data[4]
-		self.accel_z = msg.data[5]  
-
-		self.y.insert(0,math.arcsin(self.accel_y))
-		del self.y[-1]
-		rospy.loginfo(self.y)   
+		#self.y.insert(0,math.asin(self.accel_y))
+		#del self.y[-1]
+		#rospy.loginfo(self.y)   
 
 def talker():
 	rospy.init_node('controller', anonymous=True)
@@ -107,4 +124,4 @@ def talker():
 if __name__ == '__main__':
     try:
         talker()
-    except rospy.ROSInterruptException: pass  
+    except rospy.ROSInterruptException: pass
