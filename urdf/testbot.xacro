@@ -264,7 +264,7 @@
     <joint name="joint_roll1" type="continuous">
       <parent link="module_0" />
       <child link="module_1" />
-      <origin xyz="-${module_length0} 0 -${dist_wheel_joint}" />
+      <origin xyz="-${module_length0} 0 0" />
       <axis xyz="1 0 0" />
     </joint>
 
