@@ -297,7 +297,7 @@
   </link>
 
   <joint name="fixed_imu" type="fixed">
-    <parent link="module_1"/>
+    <parent link="module_0"/>
     <child link="imu_link"/>
     <origin xyz="-0.15 0 0.03" rpy="0 0 0" />
   </joint>
