@@ -3,7 +3,8 @@
 
   <!-- PROPERTY LIST -->
     <xacro:property name="scaling" value="3" />
-    <xacro:property name="module_length1" value="${scaling * 0.159}" />
+    <xacro:property name="module_length0" value="${scaling * 0.14}" />
+    <xacro:property name="module_length1" value="${scaling * 0.019}" />
     <xacro:property name="module_length2" value="${scaling * 0.171}" />
     <xacro:property name="module_length3" value="${scaling * 0.164}" />
     <xacro:property name="module_length4" value="${scaling * 0.159}" />
@@ -28,6 +29,34 @@
   <material name="green">
     <color rgba="0 1 0 1" />
   </material>
+
+
+  <link name="module_0">
+    <inertial>
+      <origin xyz="${-module_length0 / 2} 0 0" rpy="${pi/2} 0 0"/>
+      <mass value="${module_mass}"/>
+      <inertia  ixx="${module_mass * (module_height * module_height + module_width * module_width)/12}" ixy="0" ixz="0"
+                iyy="${module_mass * (module_length0 * module_length0 + module_width * module_width)/12}" iyz="0"
+                izz="${module_mass * (module_height * module_height + module_length0 * module_length0)/12}" />
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="${module_length0} ${module_width} ${module_height}"/>
+      </geometry>
+      <origin xyz="${-module_length0 / 2} 0 0" rpy="0 0 0"/>
+      <material name="red"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${module_length0} ${module_width} ${module_height}"/>
+      </geometry>
+      <origin xyz="${-module_length0 / 2} 0 0" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <gazebo reference="module_0">
+      <material>Gazebo/Red</material>
+  </gazebo>
 
 
   <link name="module_1">
@@ -97,7 +126,7 @@
       </xacro:if>
     </gazebo>
 
-    <joint name="joint${number - 1}" type="revolute">
+    <joint name="joint${number-1}" type="revolute">
       <limit lower="-1.5708" upper="1.5708" effort="10" velocity="7.5" />
       <parent link="module_${number - 1}" />
       <child link="module_${number}" />
@@ -227,16 +256,24 @@
 
   <joint name="fixed" type="fixed">
     <parent link="base_footprint"/>
-    <child link="module_1"/>
+    <child link="module_0"/>
     <origin xyz="0 0 0.075" rpy="0 0 0" />
   </joint>
+
+
+    <joint name="joint_roll1" type="continuous">
+      <parent link="module_0" />
+      <child link="module_1" />
+      <origin xyz="-${module_length0} 0 -${dist_wheel_joint}" />
+      <axis xyz="1 0 0" />
+    </joint>
 
   <xacro:module number="2" length="${module_length2}" parent_length="${module_length1}"/>
   <xacro:module number="3" length="${module_length3}" parent_length="${module_length2}"/>
   <xacro:module number="4" length="${module_length4}" parent_length="${module_length3}"/>
 
-  <xacro:wheel number="1" module="1" position="${- scaling*0.015}" />
-  <xacro:wheel number="2" module="1" position="${- scaling*0.015}" />
+  <xacro:wheel number="1" module="0" position="${- scaling*0.015}" />
+  <xacro:wheel number="2" module="0" position="${- scaling*0.015}" />
 
   <xacro:wheel number="3" module="2" position="${-module_length2 + scaling*0.043}" />
   <xacro:wheel number="4" module="2" position="${-module_length2 + scaling*0.043}" />
