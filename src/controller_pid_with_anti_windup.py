@@ -9,14 +9,18 @@ import rospy
 from std_msgs.msg import Float64
 from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Twist
 
 LOOP_RATE_IN_HZ = 100
 G = 9.81
+OFFSET_Y = 0.135
 
 if rospy.has_param('/use_simulation'):
 	SIMULATION = rospy.get_param('/use_simulation')
 else:
 	SIMULATION = False
+
+vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
 class Controller:
 
@@ -42,7 +46,7 @@ class Controller:
 		self.umax = 0.116
 		self.umin = -0.116
 		self.Kp = 26.0
-		self.Ki = 7.47
+		self.Ki = 0.8
 		self.Kd = 20.0
 
 		self.dt = 1.0 / LOOP_RATE_IN_HZ
@@ -58,6 +62,13 @@ class Controller:
 
 		self.delta1_pub = rospy.Publisher('/testbot/delta1', Float64, queue_size=10)
 
+		self.e_pub = rospy.Publisher('/controller/e', Float64, queue_size=10)
+		self.y_pub = rospy.Publisher('/controller/y', Float64, queue_size=10)
+		self.u_pre_pub = rospy.Publisher('/controller/u_pre', Float64, queue_size=10)
+		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
+		self.diff_u_pub = rospy.Publisher('/controller/diff_u', Float64, queue_size=10)
+		self.e_sum_pub = rospy.Publisher('/controller/e_sum', Float64, queue_size=10)
+
 	def control(self):
 		self.diff_u = 0.0
 
@@ -65,9 +76,10 @@ class Controller:
 		self.e.insert(0, self.ref - self.y[1])
 		del self.e[-1]
 		self.e_sum += self.e[0]
-		#rospy.loginfo("e_sum = %f", self.e_sum)
+		rospy.loginfo("e = %f", -self.e[0])
 
-		I_anteil = self.dt * self.e_sum
+		#I_anteil = self.dt * -self.e_sum
+		I_anteil = 0.0
 		D_anteil = (self.e[0] - self.e[1]) / self.dt
 		self.u_pre = self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil
 
@@ -78,26 +90,31 @@ class Controller:
 			self.diff_u = self.umin - self.u_pre
 
 		if self.diff_u != 0:
-			I_anteil = 1 / self.Ki * self.diff_u + self.e[0]
+			I_anteil = (1.0 / self.Ki) * self.diff_u + self.e[0]
 
 		# 1e-5 equivalent to 10**-5 --> readability
 		# self.y.insert(0, ((2 * self.y[1]) - self.y[2] + (2.5 * 1e-5 * (self.u[1] + self.u[2]))))
 		# getting some weird values from accel_y --> 44++
 		#rospy.loginfo("accel_y = %f", self.accel_y)
 		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0):
-			self.y.insert(0, math.asin(self.accel_y/G))
+			self.y.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
 			del self.y[-1]
 
 		self.u.insert(0,self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil)
 		del self.u[-1]
 
-		self.delta1 = -0.015 * math.tan(self.u[0]) * 180 / math.pi
-
-		#rospy.loginfo(self.y)
-		#rospy.loginfo(self.u[0])
+		self.delta1 = 0.015 * math.tan(self.u[0]) * 180 / math.pi
+		#rospy.loginfo("y = %f",self.y[0])
+		rospy.loginfo("delta1 = %f",self.delta1)
 
 	def publish_all(self):
 		self.delta1_pub.publish(self.delta1)
+		self.e_pub.publish(self.e[0])
+		self.y_pub.publish(self.y[0])
+		self.u_pre_pub.publish(self.u_pre)
+		self.u_pub.publish(self.u[0])
+		self.diff_u_pub.publish(self.diff_u)
+		self.e_sum_pub.publish(self.e_sum)
 
 	def imu_callback(self, msg):
 		if SIMULATION:
@@ -130,6 +147,9 @@ def talker():
 		ctrl.control()
 		ctrl.publish_all()
 		rate.sleep()
+	msg = Twist()
+	msg.linear.x = 0.0
+	vel_pub.publish(msg)
 
 if __name__ == '__main__':
     try:
