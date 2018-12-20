@@ -95,10 +95,14 @@ class Filter:
         imu.linear_acceleration.x = self.accel_x
         imu.linear_acceleration.y = self.accel_y
         imu.linear_acceleration.z = self.accel_z
+
+        rospy.loginfo("lin_accel_x = %f", self.accel_x)
+        rospy.loginfo("lin_accel_y = %f", self.accel_y)
+        rospy.loginfo("lin_accel_z = %f", self.accel_z)
         
         self.pub_imu.publish(imu)
 
-        rospy.loginfo(np.arcsin(self.accel_y/9.81))
+        #rospy.loginfo(np.arcsin(self.accel_y/9.81))
         
 #        delta = -5.0*roll - 0.0*math.sin(pitch)/roll
         

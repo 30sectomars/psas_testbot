@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 # Python libs
 import math
-import numpy as np
 
 # Ros libs
 import rospy
@@ -12,6 +11,7 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Imu
 
 LOOP_RATE_IN_HZ = 100
+G = 9.81
 
 if rospy.has_param('/use_simulation'):
 	SIMULATION = rospy.get_param('/use_simulation')
@@ -30,7 +30,7 @@ class Controller:
 		self.accel_y = 0.0
 		self.accel_z = 0.0
 
-		self.ref = np.pi/180
+		self.ref = 0.0
 
 		self.e_sum = 0.0
 		self.e = [0.0, 0.0]
@@ -65,7 +65,7 @@ class Controller:
 		self.e.insert(0, self.ref - self.y[1])
 		del self.e[-1]
 		self.e_sum += self.e[0]
-		rospy.loginfo("e_sum = %f", self.e_sum)
+		#rospy.loginfo("e_sum = %f", self.e_sum)
 
 		I_anteil = self.dt * self.e_sum
 		D_anteil = (self.e[0] - self.e[1]) / self.dt
@@ -81,13 +81,20 @@ class Controller:
 			I_anteil = 1 / self.Ki * self.diff_u + self.e[0]
 
 		# 1e-5 equivalent to 10**-5 --> readability
-		self.y.insert(0, ((2 * self.y[1]) - self.y[2] + (2.5 * 1e-5 * (self.u[1] + self.u[2]))))
+		# self.y.insert(0, ((2 * self.y[1]) - self.y[2] + (2.5 * 1e-5 * (self.u[1] + self.u[2]))))
+		# getting some weird values from accel_y --> 44++
+		#rospy.loginfo("accel_y = %f", self.accel_y)
+		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0):
+			self.y.insert(0, math.asin(self.accel_y/G))
+			del self.y[-1]
+
 		self.u.insert(0,self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil)
-		del self.y[-1]
 		del self.u[-1]
 
+		self.delta1 = -0.015 * math.tan(self.u[0]) * 180 / math.pi
+
 		#rospy.loginfo(self.y)
-		#rospy.loginfo(self.u)
+		#rospy.loginfo(self.u[0])
 
 	def publish_all(self):
 		self.delta1_pub.publish(self.delta1)
@@ -100,6 +107,9 @@ class Controller:
 			self.accel_x = msg.linear_acceleration.x
 			self.accel_y = -msg.linear_acceleration.y
 			self.accel_z = -msg.linear_acceleration.z
+			#rospy.loginfo("lin_accel_x = %f", self.accel_x)
+			#rospy.loginfo("lin_accel_y = %f", self.accel_y)
+			#rospy.loginfo("lin_accel_z = %f", self.accel_z)
 		else:
 			self.gyro_x = msg.data[0]
 			self.gyro_y = msg.data[1]

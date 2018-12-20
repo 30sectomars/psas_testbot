@@ -157,7 +157,7 @@ class Robot:
         if msg.data > 2.0:
             self.delta1 = 2.0
         elif msg.data < -2.0:
-            self.delta1 = 2.0
+            self.delta1 = -2.0
         else:
             self.delta1 = msg.data
         self.delta1 = self.delta1 / 180 * math.pi
