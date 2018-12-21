@@ -19,13 +19,19 @@ from sensor_msgs.msg import Imu
 from std_msgs.msg import Float64
 from std_msgs.msg import Float32MultiArray
 
+if rospy.has_param('/use_simulation'):
+    SIMULATION = rospy.get_param('/use_simulation')
+else:
+    SIMULATION = False
 
 class Filter:
     
     def __init__(self):
         
-        self.sub = rospy.Subscriber('/testbot/imu', Float32MultiArray, self.imu_callback)
-        #self.sub = rospy.Subscriber('/testbot/imu', Imu, self.imu_callback)
+        if SIMULATION:
+            self.sub = rospy.Subscriber('/testbot/imu', Imu, self.imu_callback)
+        else:
+            self.sub = rospy.Subscriber('/testbot/imu', Float32MultiArray, self.imu_callback)
         
         self.pub_roll = rospy.Publisher('/roll', Float64, queue_size=10)
         self.pub_pitch = rospy.Publisher('/pitch', Float64, queue_size=10)
@@ -50,22 +56,22 @@ class Filter:
         
         
     def imu_callback(self, msg):
-        self.gyro_x = msg.data[0]       # rad/s
-        self.gyro_y = msg.data[1]       # Achsen: -
-        self.gyro_z = msg.data[2]       # Achsen: -
 
-        self.accel_x = msg.data[3]      # m/s²
-        self.accel_y = msg.data[4]      # Achsen: -
-        self.accel_z = msg.data[5]      # Achsen: -
+        if SIMULATION:
+            self.gyro_x = msg.angular_velocity.x        # rad/s
+            self.gyro_y = -msg.angular_velocity.y       # Achsen: -
+            self.gyro_z = -msg.angular_velocity.z       # Achsen: -
+            self.accel_x = msg.linear_acceleration.x    # m/s²
+            self.accel_y = -msg.linear_acceleration.y   # Achsen: -
+            self.accel_z = -msg.linear_acceleration.z   # Achsen: -
+        else:
+            self.gyro_x = msg.data[0]
+            self.gyro_y = msg.data[1]
+            self.gyro_z = msg.data[2]
+            self.accel_x = msg.data[3]
+            self.accel_y = msg.data[4]
+            self.accel_z = msg.data[5]
         
-        #self.gyro_x = msg.angular_velocity.x
-        #self.gyro_y = -msg.angular_velocity.y
-        #self.gyro_z = -msg.angular_velocity.z
-
-        #self.accel_x = msg.linear_acceleration.x
-        #self.accel_y = -msg.linear_acceleration.y
-        #self.accel_z = -msg.linear_acceleration.z
-
         w_x = self.gyro_x
         w_y = self.gyro_y
         w_z = self.gyro_z
@@ -102,7 +108,7 @@ class Filter:
         
         self.pub_imu.publish(imu)
 
-        rospy.loginfo(np.arcsin(self.accel_y/9.81))
+        #rospy.loginfo(np.arcsin(self.accel_y/9.81))
         
 #        delta = -5.0*roll - 0.0*math.sin(pitch)/roll
         
