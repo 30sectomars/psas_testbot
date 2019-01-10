@@ -16,10 +16,13 @@ G = 9.81
 
 if rospy.has_param('/use_simulation'):
 	SIMULATION = rospy.get_param('/use_simulation')
-	OFFSET_Y = 0.135
+	if SIMULATION:
+		OFFSET_Y = 0.0
+	else:
+		OFFSET_Y = 0.135
 else:
 	SIMULATION = False
-	OFFSET_Y = 0.0
+	OFFSET_Y = 0.135
 
 vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
@@ -35,8 +38,15 @@ class Controller:
 		self.accel_y = 0.0
 		self.accel_z = 0.0
 
+		self.l1 = 19
+
+		self.k1 = 0.4
+		self.k2 = 0.889
+
+		self.alpha = 0.0
+
 		self.u = 0.0
-		self.alphaB = [0.0, 0.0]
+		self.psiBK = [0.0, 0.0]
 		self.psiB = [0.0, 0.0]
 		self.delta1 = 0.0
 
@@ -51,27 +61,32 @@ class Controller:
 
 		self.delta1_pub = rospy.Publisher('/testbot/delta1', Float64, queue_size=10)
 		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
-		self.alphaB_pub = rospy.Publisher('/controller/alphaB', Float64, queue_size=10)
+		self.psiBK_pub = rospy.Publisher('/controller/psiBK', Float64, queue_size=10)
 		self.psiB_pub = rospy.Publisher('/controller/psiB', Float64, queue_size=10)
+		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
 
 	def control(self):
-		alpha = math.asin(self.accel_y/G)
+		self.alpha = math.asin(self.accel_y/G)
 
-		self.alphaB.insert(0, self.alphaB[0] + 0.005 * self.psiB[0] + 0.79 * (alpha - self.alphaB[0]))
-		del self.alphaB[-1]
+		self.psiBK.insert(0, (0.905 * self.psiB[0] - self.l1 * self.alpha + 0.01 * self.u))
+		del self.psiBK[-1]
 
 		# verschobener Index bei alphaB weil vorher insert an stelle 0
-		self.psiB.insert(0, self.psiB[0] + 0.01 * self.u + 31.2 * (alpha - self.alphaB[1]))
-		del self.alphaB[-1]
-
-		self.u = -17.4 * self.alphaB[1] - 5.85 * self.psiB[1]
-		delta1 = 0.015 * math.tan(u)
+		self.psiB.insert(0, (self.psiBK[1] + self.l1 * self.alpha))
+		del self.psiB[-1]
+ 
+		self.u = -self.k1 * self.alpha - self.k2 * self.psiB[1]
+		self.delta1 = math.tan(0.015 / 0.05 * self.u) * 180.0 / math.pi
+		#self.delta1 = 0.0
+		#rospy.loginfo(self.delta1)
+		rospy.loginfo("alpha = %f", self.alpha)
 
 	def publish_all(self):
 		self.delta1_pub.publish(self.delta1)
 		self.u_pub.publish(self.u)
-		self.alphaB_pub.publish(self.alphaB[1])
+		self.psiBK_pub.publish(self.psiBK[1])
 		self.psiB_pub.publish(self.psiB[1])
+		self.alpha_pub.publish(self.alpha)
 
 	def imu_callback(self, msg):
 		if SIMULATION:

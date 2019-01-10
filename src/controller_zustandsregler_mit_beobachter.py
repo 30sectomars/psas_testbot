@@ -38,27 +38,22 @@ class Controller:
 		self.accel_y = 0.0
 		self.accel_z = 0.0
 
-		self.ref = 0.0
+		self.l1 = 0.79
+		self.l2 = 31.2
 
-		self.e_sum = 0.0
-		self.e = [0.0, 0.0]
-		self.y = [0.0, 0.0, 0.0]
-		self.u_pre = 0.0
-		self.u = [0.0, 0.0, 0.0]
-		self.diff_u = 0.0
+		self.k1 = 0.4
+		self.k2 = 0.899
 
-		self.umax = 0.116
-		self.umin = -0.116
-		self.Kp = 26
-		self.Ki = 7.47
-		self.Kd = 20.0
+		self.alpha = 0.0
+
+		self.u = 0.0
+		self.alphaB = [0.0, 0.0]
+		self.psiB = [0.0, 0.0]
+		self.delta1 = 0.0
 
 		self.dt = 1.0 / LOOP_RATE_IN_HZ
 		rospy.loginfo("dt = %f", self.dt)
 		rospy.loginfo(SIMULATION)
-		rospy.loginfo(OFFSET_Y)
-
-		self.delta1 = 0.0
 
 		if SIMULATION:
 			self.imu_sub = rospy.Subscriber('/imu', Imu, self.imu_callback)
@@ -66,61 +61,33 @@ class Controller:
 			self.imu_sub = rospy.Subscriber('/testbot/imu', Float32MultiArray, self.imu_callback)
 
 		self.delta1_pub = rospy.Publisher('/testbot/delta1', Float64, queue_size=10)
-
-		self.e_pub = rospy.Publisher('/controller/e', Float64, queue_size=10)
-		self.y_pub = rospy.Publisher('/controller/y', Float64, queue_size=10)
-		self.u_pre_pub = rospy.Publisher('/controller/u_pre', Float64, queue_size=10)
 		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
-		self.diff_u_pub = rospy.Publisher('/controller/diff_u', Float64, queue_size=10)
-		self.e_sum_pub = rospy.Publisher('/controller/e_sum', Float64, queue_size=10)
+		self.alphaB_pub = rospy.Publisher('/controller/alphaB', Float64, queue_size=10)
+		self.psiB_pub = rospy.Publisher('/controller/psiB', Float64, queue_size=10)
+		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
 
 	def control(self):
-		self.diff_u = 0.0
+		self.alpha = math.asin(self.accel_y/G)
 
-		# insert new error in list and pop oldest value
-		self.e.insert(0, self.ref - self.y[1])
-		del self.e[-1]
-		self.e_sum += self.e[0]
-		rospy.loginfo("e = %f", -self.e[0])
+		self.alphaB.insert(0, (self.alphaB[0] + 0.005 * self.psiB[0] + self.l1 * (self.alpha - self.alphaB[0])))
+		del self.alphaB[-1]
 
-		#I_anteil = self.dt * -self.e_sum
-		I_anteil = 0.0
-		#D_anteil = (self.e[0] - self.e[1]) / self.dt
-		D_anteil = 0.0
-		self.u_pre = self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil
-
-		if self.u_pre > self.umax:
-			self.diff_u = self.umax - self.u_pre
-
-		if self.u_pre < self.umin:
-			self.diff_u = self.umin - self.u_pre
-
-		if self.diff_u != 0:
-			I_anteil = (1.0 / self.Ki) * self.diff_u + self.e[0]
-
-		# 1e-5 equivalent to 10**-5 --> readability
-		# self.y.insert(0, ((2 * self.y[1]) - self.y[2] + (2.5 * 1e-5 * (self.u[1] + self.u[2]))))
-		# getting some weird values from accel_y --> 44++
-		#rospy.loginfo("accel_y = %f", self.accel_y)
-		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0):
-			self.y.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
-			del self.y[-1]
-
-		self.u.insert(0,self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil)
-		del self.u[-1]
-
-		self.delta1 = math.tan(0.015 / 0.05 * self.u[0]) * 180 / math.pi
-		#rospy.loginfo("y = %f",self.y[0])
-		#rospy.loginfo("delta1 = %f",self.delta1)
+		# verschobener Index bei alphaB weil vorher insert an stelle 0
+		self.psiB.insert(0, (self.psiB[0] + 0.01 * self.u + self.l2 * (self.alpha - self.alphaB[1])))
+		del self.psiB[-1]
+ 
+		self.u = -self.k1 * self.alphaB[1] - self.k2 * self.psiB[1]
+		self.delta1 = math.tan(0.015 / 0.05 * self.u) * 180.0 / math.pi
+		#self.delta1 = 0.0
+		#rospy.loginfo(self.delta1)
+		rospy.loginfo("alpha = %f", self.alpha)
 
 	def publish_all(self):
 		self.delta1_pub.publish(self.delta1)
-		self.e_pub.publish(self.e[0])
-		self.y_pub.publish(self.y[0])
-		self.u_pre_pub.publish(self.u_pre)
-		self.u_pub.publish(self.u[0])
-		self.diff_u_pub.publish(self.diff_u)
-		self.e_sum_pub.publish(self.e_sum)
+		self.u_pub.publish(self.u)
+		self.alphaB_pub.publish(self.alphaB[1])
+		self.psiB_pub.publish(self.psiB[1])
+		self.alpha_pub.publish(self.alpha)
 
 	def imu_callback(self, msg):
 		if SIMULATION:
@@ -140,10 +107,6 @@ class Controller:
 			self.accel_x = msg.data[3]
 			self.accel_y = msg.data[4]
 			self.accel_z = msg.data[5]
-
-		#self.y.insert(0,math.asin(self.accel_y))
-		#del self.y[-1]
-		#rospy.loginfo(self.y)   
 
 def talker():
 	rospy.init_node('controller', anonymous=True)
