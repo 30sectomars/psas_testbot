@@ -24,8 +24,6 @@ else:
 	SIMULATION = False
 	OFFSET_Y = 0.135
 
-vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-
 class Controller:
 
 	def __init__(self):
@@ -64,6 +62,9 @@ class Controller:
 		self.psiBK_pub = rospy.Publisher('/controller/psiBK', Float64, queue_size=10)
 		self.psiB_pub = rospy.Publisher('/controller/psiB', Float64, queue_size=10)
 		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
+		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+
+		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
 		self.alpha = math.asin(self.accel_y/G)
@@ -106,6 +107,13 @@ class Controller:
 			self.accel_x = msg.data[3]
 			self.accel_y = msg.data[4]
 			self.accel_z = msg.data[5]
+
+	def shutdown(self):
+		msg = Twist()
+		msg.linear.x = 0.0
+		msg.angular.z = 0.0
+		self.vel_pub.publish(msg)
+		#rospy.loginfo("Controller is shut down")
 
 def talker():
 	rospy.init_node('controller', anonymous=True)

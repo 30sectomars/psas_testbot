@@ -24,8 +24,6 @@ else:
 	SIMULATION = False
 	OFFSET_Y = 0.135
 
-vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-
 class Controller:
 
 	def __init__(self):
@@ -73,6 +71,9 @@ class Controller:
 		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
 		self.diff_u_pub = rospy.Publisher('/controller/diff_u', Float64, queue_size=10)
 		self.e_sum_pub = rospy.Publisher('/controller/e_sum', Float64, queue_size=10)
+		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+
+		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
 		self.diff_u = 0.0
@@ -143,7 +144,14 @@ class Controller:
 
 		#self.y.insert(0,math.asin(self.accel_y))
 		#del self.y[-1]
-		#rospy.loginfo(self.y)   
+		#rospy.loginfo(self.y)
+
+	def shutdown(self):
+		msg = Twist()
+		msg.linear.x = 0.0
+		msg.angular.z = 0.0
+		self.vel_pub.publish(msg)
+		#rospy.loginfo("Controller is shut down")
 
 def talker():
 	rospy.init_node('controller', anonymous=True)
@@ -153,9 +161,6 @@ def talker():
 		ctrl.control()
 		ctrl.publish_all()
 		rate.sleep()
-	msg = Twist()
-	msg.linear.x = 0.0
-	vel_pub.publish(msg)
 
 if __name__ == '__main__':
     try:

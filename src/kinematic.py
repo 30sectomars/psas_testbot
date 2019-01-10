@@ -82,6 +82,8 @@ class Robot:
         # ROS subscriber
         self.delta1_sub = rospy.Subscriber('/testbot/delta1', Float64, self.delta1_callback)
         self.twist_sub = rospy.Subscriber('/cmd_vel', Twist, self.twist_callback)
+
+        rospy.on_shutdown(self.shutdown)
         
         
     def kinematic(self):
@@ -167,13 +169,27 @@ class Robot:
         self.v1 = msg.linear.x * 0.05 * scaling
         self.delta1 = msg.angular.z * 2 * math.pi / 180
         print self.delta1
+        rospy.loginfo("kinematic: v_mops = %f", self.v1)
         
+    def shutdown(self):
+        self.phi2 = 0.0
+        self.phi3 = 0.0
+        self.phi4 = 0.0
+        self.omega1 = 0.0
+        self.omega2 = 0.0
+        self.omega3 = 0.0
+        self.omega4 = 0.0
+        self.omega5 = 0.0
+        self.omega6 = 0.0
+        self.omega7 = 0.0
+        self.omega8 = 0.0
+        self.publish_all()
 
 
 def talker():
     rospy.init_node('kinematic', anonymous=True)
     testbot = Robot()
-    rate = rospy.Rate(20) # 10hz
+    rate = rospy.Rate(100) # 10hz
     while not rospy.is_shutdown():
         testbot.kinematic()
         testbot.publish_all()
