@@ -11,7 +11,7 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Twist
 
-LOOP_RATE_IN_HZ = 100
+#Gravity
 G = 9.81
 
 if rospy.has_param('/use_simulation'):

@@ -2,7 +2,7 @@
 # Python libs
 import math
 
-# Ros libs
+# Ros libsSIMULATION:
 import rospy
 
 # Ros messages
@@ -11,8 +11,9 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Twist
 
-LOOP_RATE_IN_HZ = 100
+#Gravity
 G = 9.81
+FILTER_SIZE = 10
 
 # IMU offset in real world
 if rospy.has_param('/use_simulation'):
@@ -20,10 +21,10 @@ if rospy.has_param('/use_simulation'):
 	if SIMULATION:
 		OFFSET_Y = 0.0
 	else:
-		OFFSET_Y = 0.135
+		OFFSET_Y = 0.134
 else:
 	SIMULATION = False
-	OFFSET_Y = 0.135
+	OFFSET_Y = 0.134
 
 # get v_max
 if rospy.has_param('/v_max'):
@@ -41,6 +42,8 @@ class Controller:
 
 	def __init__(self):
 
+		self.connected = False
+
 		self.gyro_x = 0.0
 		self.gyro_y = 0.0
 		self.gyro_z = 0.0
@@ -53,16 +56,17 @@ class Controller:
 
 		self.e_sum = 0.0
 		self.e = [0.0, 0.0]
-		self.y = [0.0, 0.0, 0.0]
+		self.y = 0.0
+		self.y_list = [0.0] * FILTER_SIZE
 		self.u_pre = 0.0
 		self.u = [0.0, 0.0, 0.0]
 		self.diff_u = 0.0
 
 		self.umax = 0.116
 		self.umin = -0.116
-		self.Kp = 26.0
-		self.Ki = 7.47
-		self.Kd = 20.0
+		self.Kp = 2.0
+		self.Ki = 0.1
+		self.Kd = 0.4
 
 		self.dt = 1.0 / LOOP_RATE_IN_HZ
 		rospy.loginfo("dt = %f", self.dt)
@@ -79,7 +83,9 @@ class Controller:
 		self.delta1_pub = rospy.Publisher('/testbot/delta1', Float64, queue_size=10)
 
 		self.e_pub = rospy.Publisher('/controller/e', Float64, queue_size=10)
+		self.y_avg_pub = rospy.Publisher('/controller/y_avg', Float64, queue_size=10)
 		self.y_pub = rospy.Publisher('/controller/y', Float64, queue_size=10)
+		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
 		self.u_pre_pub = rospy.Publisher('/controller/u_pre', Float64, queue_size=10)
 		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
 		self.diff_u_pub = rospy.Publisher('/controller/diff_u', Float64, queue_size=10)
@@ -95,14 +101,17 @@ class Controller:
 	def control(self):
 		self.diff_u = 0.0
 
+		self.y = sum(self.y_list)/len(self.y_list)
+		rospy.loginfo("avg y = %f", self.y)
+
 		# insert new error in list and pop oldest value
-		self.e.insert(0, self.ref - self.y[1])
+		self.e.insert(0, self.ref -self.y)
 		del self.e[-1]
 		self.e_sum += self.e[0]
-		rospy.loginfo("e = %f", -self.e[0])
+		#rospy.loginfo("e = %f", -self.e[0])
 
-		I_anteil = self.dt * -self.e_sum
-		#I_anteil = 0.0
+		#I_anteil = self.dt * -self.e_sum
+		I_anteil = 0.0
 		D_anteil = (self.e[0] - self.e[1]) / self.dt
 		#D_anteil = 0.0
 		self.u_pre = self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil
@@ -116,31 +125,30 @@ class Controller:
 		if self.diff_u != 0:
 			I_anteil = (1.0 / self.Ki) * self.diff_u + self.e[0]
 
-		# 1e-5 equivalent to 10**-5 --> readability
-		# self.y.insert(0, ((2 * self.y[1]) - self.y[2] + (2.5 * 1e-5 * (self.u[1] + self.u[2]))))
-		# getting some weird values from accel_y --> 44++
-		#rospy.loginfo("accel_y = %f", self.accel_y)
-		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0):
-			self.y.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
-			del self.y[-1]
+		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0) & self.connected:
+			self.y_list.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
+			del self.y_list[-1]
 
 		self.u.insert(0,self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil)
 		del self.u[-1]
 
-		self.delta1 = math.tan(0.015 / 0.05 * self.u[0]) * 180 / math.pi
-		#rospy.loginfo("y = %f",self.y[0])
+		self.delta1 = -math.tan(0.015 / V_MAX * self.u[0]) * 180 / math.pi
+		#self.delta1 = 0.0
+		#rospy.loginfo("y = %f",self.y_list[0])
 		#rospy.loginfo("delta1 = %f",self.delta1)
 
 	def publish_all(self):
 		self.delta1_pub.publish(self.delta1)
 		self.e_pub.publish(self.e[0])
-		self.y_pub.publish(self.y[0])
+		self.y_pub.publish(self.y_list[0])
+		self.y_avg_pub.publish(self.y)
 		self.u_pre_pub.publish(self.u_pre)
 		self.u_pub.publish(self.u[0])
 		self.diff_u_pub.publish(self.diff_u)
 		self.e_sum_pub.publish(self.e_sum)
 
 	def imu_callback(self, msg):
+		self.connected = True
 		if SIMULATION:
 			self.gyro_x = msg.angular_velocity.x
 			self.gyro_y = -msg.angular_velocity.y
@@ -159,9 +167,9 @@ class Controller:
 			self.accel_y = msg.data[4]
 			self.accel_z = msg.data[5]
 
-		#self.y.insert(0,math.asin(self.accel_y))
-		#del self.y[-1]
-		#rospy.loginfo(self.y)
+		#self.y_list.insert(0,math.asin(self.accel_y))
+		#del self.y_list[-1]
+		#rospy.loginfo(self.y_list)
 
 	def shutdown(self):
 		msg = Twist()

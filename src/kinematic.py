@@ -161,10 +161,10 @@ class Robot:
         
     
     def delta1_callback(self, msg):
-        if msg.data > 2.0:
-            self.delta1 = 2.0
-        elif msg.data < -2.0:
-            self.delta1 = -2.0
+        if msg.data > 3.0:
+            self.delta1 = 3.0
+        elif msg.data < -3.0:
+            self.delta1 = -3.0
         else:
             self.delta1 = msg.data
         self.delta1 = self.delta1 / 180 * math.pi
