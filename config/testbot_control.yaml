@@ -20,7 +20,6 @@ testbot:
     joint: joint3
     pid: {p: 100.0, i: 10.0, d: 0.0}
 
-
   # Velocity Controllers ---------------------------------------
   wheel1_controller:
     type: effort_controllers/JointVelocityController

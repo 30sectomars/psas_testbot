@@ -18,6 +18,12 @@ from geometry_msgs.msg import Twist
 
 scaling = rospy.get_param('scale', 3)
 
+# get loop rate in hz
+if rospy.has_param('/loop_rate_in_hz'):
+    LOOP_RATE_IN_HZ = rospy.get_param('/loop_rate_in_hz')
+else:
+    LOOP_RATE_IN_HZ = 100
+
 class Robot:
         
     # Link length
@@ -84,7 +90,6 @@ class Robot:
         self.twist_sub = rospy.Subscriber('/cmd_vel', Twist, self.twist_callback)
 
         rospy.on_shutdown(self.shutdown)
-        
         
     def kinematic(self):
         
@@ -189,7 +194,7 @@ class Robot:
 def talker():
     rospy.init_node('kinematic', anonymous=True)
     testbot = Robot()
-    rate = rospy.Rate(100) # 10hz
+    rate = rospy.Rate(LOOP_RATE_IN_HZ) # 10hz
     while not rospy.is_shutdown():
         testbot.kinematic()
         testbot.publish_all()

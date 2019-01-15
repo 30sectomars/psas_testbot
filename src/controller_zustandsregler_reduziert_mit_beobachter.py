@@ -11,7 +11,6 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Twist
 
-LOOP_RATE_IN_HZ = 100
 G = 9.81
 
 if rospy.has_param('/use_simulation'):
@@ -23,6 +22,18 @@ if rospy.has_param('/use_simulation'):
 else:
 	SIMULATION = False
 	OFFSET_Y = 0.135
+
+# get v_max
+if rospy.has_param('/v_max'):
+	V_MAX = rospy.get_param('/v_max')
+else:
+	V_MAX = 0.05
+
+# get loop rate in hz
+if rospy.has_param('/loop_rate_in_hz'):
+	LOOP_RATE_IN_HZ = rospy.get_param('/loop_rate_in_hz')
+else:
+	LOOP_RATE_IN_HZ = 100
 
 class Controller:
 
@@ -63,6 +74,10 @@ class Controller:
 		self.psiB_pub = rospy.Publisher('/controller/psiB', Float64, queue_size=10)
 		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
 		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+
+		msg = Twist()
+		msg.linear.x = V_MAX
+		self.vel_pub.publish(msg)
 
 		rospy.on_shutdown(self.shutdown)
 
