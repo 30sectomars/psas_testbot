@@ -84,7 +84,7 @@ class Controller:
 		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
-		self.alpha = math.asin(self.accel_y/G)
+		self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
 
 		self.alphaB.insert(0, (self.alphaB[0] + 0.005 * self.psiB[0] + self.l1 * (self.alpha - self.alphaB[0])))
 		del self.alphaB[-1]

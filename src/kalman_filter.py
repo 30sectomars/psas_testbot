@@ -90,7 +90,7 @@ class Controller:
 		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
-		self.alpha = math.asin(self.accel_y/G)
+		self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
 
 		# prediction
 		alpha_prediction = self.alpha_correction + 0.005 * self.psi_correction 
