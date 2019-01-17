@@ -169,12 +169,15 @@ class Robot:
             self.delta1 = msg.data
         self.delta1 = self.delta1 / 180 * math.pi
         
-    
     def twist_callback(self, msg):
-        self.v1 = msg.linear.x * 0.05 * scaling
-        self.delta1 = msg.angular.z * 2 * math.pi / 180
-        print self.delta1
-        rospy.loginfo("kinematic: v_mops = %f", self.v1)
+        self.v1 = msg.linear.x * scaling
+        if msg.angular.z > 3.0:
+            self.delta1 = 3.0
+        elif msg.angular.z < -3.0:
+            self.delta1 = -3.0
+        else:
+            self.delta1 = msg.angular.z
+        self.delta1 = self.delta1 / 180 * math.pi
         
     def shutdown(self):
         self.phi2 = 0.0

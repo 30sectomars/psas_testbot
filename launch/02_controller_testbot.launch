@@ -2,13 +2,13 @@
 
   <node name="complementary_filter" pkg="testbot" type="complementary_filter.py" />
 
-  <node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>
+  <!--<node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>-->
   <!--<node name="controller" pkg="testbot" type="controller_zustandsregler_mit_beobachter.py" output="screen"/>-->
   <!--<node name="controller" pkg="testbot" type="controller_zustandsregler_reduziert_mit_beobachter.py" output="screen"/>-->
-  <!--<node name="controller" pkg="testbot" type="kalman_filter.py" output="screen"/>-->
+  <node name="controller" pkg="testbot" type="kalman_filter.py" output="screen"/>
 
   <node name="kinematic" pkg="testbot" type="kinematic.py" />
 
-  <!--<node name="record" pkg="rosbag" type="record" args="record /controller/alpha /controller/u $(find testbot)/rosbags"/>-->
+  <!--<node name="record" pkg="rosbag" type="record" args="record /controller/y_avg $(find testbot)/rosbags"/>-->
 
 </launch>

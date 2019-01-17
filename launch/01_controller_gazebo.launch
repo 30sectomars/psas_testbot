@@ -1,7 +1,7 @@
 <launch>
 
   <param name="/use_simulation" type="bool" value="true" />
-  <param name="/v_max" type="double" value="1.0" />
+  <param name="/v_max" type="double" value="0.05" />
   <param name="/loop_rate_in_hz" type="double" value="100" />
 
   <arg name="world_name" default="$(find testbot)/world/dipole.world"/>

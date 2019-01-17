@@ -3,6 +3,7 @@
 <launch>
 
   <param name="/v_max" type="double" value="0.05" />
+  <param name="/loop_rate_in_hz" type="double" value="100" />
 
   <node pkg="testbot" name="kineamtic" type="kinematic.py" >
 	  <param name="scale" value="1.0" />
@@ -16,11 +17,14 @@
 
   <node name="imu" pkg="testbot" type="complementary_filter.py" output="screen"/>
 
-  <node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>
+  <!--<node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>-->
+  <!--<node name="controller" pkg="testbot" type="controller_zustandsregler_mit_beobachter.py" output="screen"/>-->
+  <!--<node name="controller" pkg="testbot" type="controller_zustandsregler_reduziert_mit_beobachter.py" output="screen"/>-->
+  <node name="controller" pkg="testbot" type="kalman_filter.py" output="screen"/>
 
   <node pkg="rosserial_xbee" name="xbee" type="xbee_network.py" args="/dev/ttyUSB0 1" output="screen" />
 
-  <node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/y /controller/y_avg $(find testbot)/rosbags"/>
+  <!--<node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/y /controller/y_avg $(find testbot)/rosbags"/>-->
 
   <!-- Show in Rviz   -->
   <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find testbot)/launch/rviz_imu_config.rviz"/>-->

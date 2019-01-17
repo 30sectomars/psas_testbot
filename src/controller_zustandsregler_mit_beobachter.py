@@ -13,16 +13,17 @@ from geometry_msgs.msg import Twist
 
 #Gravity
 G = 9.81
+FILTER_SIZE = 20
 
 if rospy.has_param('/use_simulation'):
 	SIMULATION = rospy.get_param('/use_simulation')
 	if SIMULATION:
 		OFFSET_Y = 0.0
 	else:
-		OFFSET_Y = 0.135
+		OFFSET_Y = 0.134
 else:
 	SIMULATION = False
-	OFFSET_Y = 0.135
+	OFFSET_Y = 0.134
 
 # get v_max
 if rospy.has_param('/v_max'):
@@ -40,6 +41,8 @@ class Controller:
 
 	def __init__(self):
 
+		self.connected = False
+
 		self.gyro_x = 0.0
 		self.gyro_y = 0.0
 		self.gyro_z = 0.0
@@ -47,23 +50,32 @@ class Controller:
 		self.accel_x = 0.0
 		self.accel_y = 0.0
 		self.accel_z = 0.0
+		
+		# langsam neu
+		self.l1 = 1.09
+		self.l2 = 14.933
+		self.k1 = 15.0
+		self.k2 = 125.65
 
-		self.l1 = 0.79
-		self.l2 = 31.2
+		# langsam alt
+		#self.l1 = 1.09
+		#self.l2 = 59.4
+		#self.k1 = 0.12 #0.4
+		#self.k2 = 0.4997 #0.899
 
-		self.k1 = 0.4
-		self.k2 = 0.899
+		# zu schnell
+		#self.l1 = 0.79
+		#self.l2 = 31.2
+		#self.k1 = 17.4
+		#self.k2 = 5.85
 
 		self.alpha = 0.0
+		self.alpha_list = [0.0] * FILTER_SIZE
 
 		self.u = 0.0
 		self.alphaB = [0.0, 0.0]
 		self.psiB = [0.0, 0.0]
 		self.delta1 = 0.0
-
-		self.dt = 1.0 / LOOP_RATE_IN_HZ
-		rospy.loginfo("dt = %f", self.dt)
-		rospy.loginfo(SIMULATION)
 
 		if SIMULATION:
 			self.imu_sub = rospy.Subscriber('/imu', Imu, self.imu_callback)
@@ -77,36 +89,45 @@ class Controller:
 		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
 		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
-		msg = Twist()
-		msg.linear.x = V_MAX
-		self.vel_pub.publish(msg)
-
 		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
-		self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
+		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0) & self.connected:
+			self.alpha_list.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
+			del self.alpha_list[-1]
 
-		self.alphaB.insert(0, (self.alphaB[0] + 0.005 * self.psiB[0] + self.l1 * (self.alpha - self.alphaB[0])))
+		self.alpha = sum(self.alpha_list)/len(self.alpha_list)
+
+		self.alphaB.insert(0, (self.alphaB[0] - 0.02 * self.psiB[0] + 2 * self.u + self.l1 * (self.alpha - self.alphaB[0])))
 		del self.alphaB[-1]
 
 		# verschobener Index bei alphaB weil vorher insert an stelle 0
-		self.psiB.insert(0, (self.psiB[0] + 0.01 * self.u + self.l2 * (self.alpha - self.alphaB[1])))
+		self.psiB.insert(0, (self.psiB[0] - 0.2 * self.u + self.l2 * (self.alpha - self.alphaB[1])))
 		del self.psiB[-1]
  
 		self.u = -self.k1 * self.alphaB[1] - self.k2 * self.psiB[1]
-		self.delta1 = math.tan(0.015 / 0.05 * self.u) * 180.0 / math.pi
+		self.delta1 = -math.tan(0.015 / V_MAX * self.u) * 180 / math.pi
+
+		if SIMULATION:
+			self.delta1 = -self.delta1
+
 		#self.delta1 = 0.0
-		#rospy.loginfo(self.delta1)
-		rospy.loginfo("alpha = %f", self.alpha)
+		rospy.loginfo(self.delta1)
+		#rospy.loginfo("alpha = %f", self.alpha)
 
 	def publish_all(self):
-		self.delta1_pub.publish(self.delta1)
+		#self.delta1_pub.publish(self.delta1)
 		self.u_pub.publish(self.u)
 		self.alphaB_pub.publish(self.alphaB[1])
 		self.psiB_pub.publish(self.psiB[1])
 		self.alpha_pub.publish(self.alpha)
+		msg = Twist()
+		msg.linear.x = V_MAX
+		msg.angular.z = self.delta1
+		self.vel_pub.publish(msg)
 
 	def imu_callback(self, msg):
+		self.connected = True
 		if SIMULATION:
 			self.gyro_x = msg.angular_velocity.x
 			self.gyro_y = -msg.angular_velocity.y
@@ -114,9 +135,7 @@ class Controller:
 			self.accel_x = msg.linear_acceleration.x
 			self.accel_y = -msg.linear_acceleration.y
 			self.accel_z = -msg.linear_acceleration.z
-			#rospy.loginfo("lin_accel_x = %f", self.accel_x)
-			#rospy.loginfo("lin_accel_y = %f", self.accel_y)
-			#rospy.loginfo("lin_accel_z = %f", self.accel_z)
+
 		else:
 			self.gyro_x = msg.data[0]
 			self.gyro_y = msg.data[1]
@@ -140,9 +159,6 @@ def talker():
 		ctrl.control()
 		ctrl.publish_all()
 		rate.sleep()
-	msg = Twist()
-	msg.linear.x = 0.0
-	vel_pub.publish(msg)
 
 if __name__ == '__main__':
     try:

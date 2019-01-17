@@ -92,10 +92,6 @@ class Controller:
 		self.e_sum_pub = rospy.Publisher('/controller/e_sum', Float64, queue_size=10)
 		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
-		msg = Twist()
-		msg.linear.x = V_MAX
-		self.vel_pub.publish(msg)
-
 		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
@@ -133,12 +129,16 @@ class Controller:
 		del self.u[-1]
 
 		self.delta1 = -math.tan(0.015 / V_MAX * self.u[0]) * 180 / math.pi
+
+		if SIMULATION:
+			self.delta1 = -self.delta1
+
 		#self.delta1 = 0.0
 		#rospy.loginfo("y = %f",self.y_list[0])
 		#rospy.loginfo("delta1 = %f",self.delta1)
 
 	def publish_all(self):
-		self.delta1_pub.publish(self.delta1)
+		#self.delta1_pub.publish(self.delta1)
 		self.e_pub.publish(self.e[0])
 		self.y_pub.publish(self.y_list[0])
 		self.y_avg_pub.publish(self.y)
@@ -146,6 +146,10 @@ class Controller:
 		self.u_pub.publish(self.u[0])
 		self.diff_u_pub.publish(self.diff_u)
 		self.e_sum_pub.publish(self.e_sum)
+		msg = Twist()
+		msg.linear.x = V_MAX
+		msg.angular.z = self.delta1
+		self.vel_pub.publish(msg)
 
 	def imu_callback(self, msg):
 		self.connected = True

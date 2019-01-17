@@ -13,16 +13,17 @@ from geometry_msgs.msg import Twist
 
 #Gravity
 G = 9.81
+FILTER_SIZE = 10
 
 if rospy.has_param('/use_simulation'):
 	SIMULATION = rospy.get_param('/use_simulation')
 	if SIMULATION:
 		OFFSET_Y = 0.0
 	else:
-		OFFSET_Y = 0.135
+		OFFSET_Y = 0.134
 else:
 	SIMULATION = False
-	OFFSET_Y = 0.135
+	OFFSET_Y = 0.134
 
 # get v_max
 if rospy.has_param('/v_max'):
@@ -40,6 +41,8 @@ class Controller:
 
 	def __init__(self):
 
+		self.connected = False
+
 		self.gyro_x = 0.0
 		self.gyro_y = 0.0
 		self.gyro_z = 0.0
@@ -54,6 +57,7 @@ class Controller:
 		self.k2 = 0.889
 
 		self.alpha = 0.0
+		self.alpha_list = [0.0] * FILTER_SIZE
 
 		self.u = 0.0
 		self.psiBK = [0.0, 0.0]
@@ -76,14 +80,14 @@ class Controller:
 		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
 		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
-		msg = Twist()
-		msg.linear.x = V_MAX
-		self.vel_pub.publish(msg)
-
 		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
-		self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
+		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0) & self.connected:
+			self.alpha_list.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
+			del self.alpha_list[-1]
+
+		self.alpha = sum(self.alpha_list)/len(self.alpha_list)
 
 		self.psiBK.insert(0, (0.905 * self.psiB[0] - self.l1 * self.alpha + 0.01 * self.u))
 		del self.psiBK[-1]
@@ -99,13 +103,18 @@ class Controller:
 		rospy.loginfo("alpha = %f", self.alpha)
 
 	def publish_all(self):
-		self.delta1_pub.publish(self.delta1)
+		#self.delta1_pub.publish(self.delta1)
 		self.u_pub.publish(self.u)
 		self.psiBK_pub.publish(self.psiBK[1])
 		self.psiB_pub.publish(self.psiB[1])
 		self.alpha_pub.publish(self.alpha)
+		msg = Twist()
+		msg.linear.x = V_MAX
+		msg.angular.z = self.delta1
+		self.vel_pub.publish(msg)
 
 	def imu_callback(self, msg):
+		self.connected = True
 		if SIMULATION:
 			self.gyro_x = msg.angular_velocity.x
 			self.gyro_y = -msg.angular_velocity.y
@@ -139,9 +148,6 @@ def talker():
 		ctrl.control()
 		ctrl.publish_all()
 		rate.sleep()
-	msg = Twist()
-	msg.linear.x = 0.0
-	vel_pub.publish(msg)
 
 if __name__ == '__main__':
     try:

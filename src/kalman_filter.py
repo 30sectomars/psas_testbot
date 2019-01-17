@@ -55,13 +55,13 @@ class Controller:
 		self.alpha = 0.0
 
 		#system
-		self.Ad = np.array([ [1.0000, 0.0050],[0.0000, 1.0000]])
+		self.Ad = np.array([[1.0000, 0.0050],[0.0000, 1.0000]])
 		self.Bd = np.array([[ 0.0000],[0.0100]])
 		self.Cd = np.array([ 1, 0])
-		self.R = 0.0016
-		self.Q = 0.0001  # mit Q = 0 bleibt das Ergebnis 0
+		self.R = 0.0256
+		self.Q = np.array([[0.01, 0.00],[0.00, 0.01]])
 
-		self.K = 0.0
+		self.K = np.array([[0.0],[0.0]])
 
 		self.alpha_correction = 0.0
 		self.psi_correction = 0.0
@@ -90,7 +90,8 @@ class Controller:
 		rospy.on_shutdown(self.shutdown)
 
 	def control(self):
-		self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
+		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0):
+			self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
 
 		# prediction
 		alpha_prediction = self.alpha_correction + 0.005 * self.psi_correction 
@@ -101,23 +102,30 @@ class Controller:
 		tmp = self.Cd * p_prediction * np.transpose(self.Cd) + self.R
 		if np.linalg.det(tmp) != 0:
 			self.K = p_prediction * np.transpose(self.Cd) * np.linalg.inv(tmp)
- 		self.alpha_correction = alpha_prediction + self.K * self.alpha - alpha_prediction #???
+ 		self.alpha_correction = alpha_prediction + self.K[0][0] * (self.alpha - alpha_prediction)
  		self.psi_correction = psi_prediction
  		self.p_correction = (np.identity(2) - self.K * self.Cd) * p_prediction
 
  		# Zustandsregler langsam
 		self.u = -self.k1 * self.alpha_correction - self.k2 * self.psi_correction
-		self.delta1 = math.tan(0.015 / 0.05 * self.u) * 180.0 / math.pi
-		rospy.loginfo("u = %f", self.u)
+		self.delta1 = -math.tan(0.015 / V_MAX * self.u) * 180 / math.pi
+		if SIMULATION:
+			self.delta1 = -self.delta1
+		#rospy.loginfo("u = %f", self.u)
 		#rospy.loginfo("alpha = %f", self.alpha)
+		rospy.loginfo("delta = %f", self.delta1)
 
 	def publish_all(self):
-		self.delta1_pub.publish(self.delta1)
+		#self.delta1_pub.publish(self.delta1)
 		self.u_pub.publish(self.u)
 		self.alpha_correction_pub.publish(self.alpha_correction)
 		self.psi_correction_pub.publish(self.psi_correction)
 		self.p_correction_pub.publish(self.p_correction)
 		self.alpha_pub.publish(self.alpha)
+		msg = Twist()
+		msg.linear.x = V_MAX
+		msg.angular.z = self.delta1
+		self.vel_pub.publish(msg)
 
 	def imu_callback(self, msg):
 		if SIMULATION:
@@ -153,9 +161,6 @@ def talker():
 		ctrl.control()
 		ctrl.publish_all()
 		rate.sleep()
-	msg = Twist()
-	msg.linear.x = 0.0
-	vel_pub.publish(msg)
 
 if __name__ == '__main__':
     try:
