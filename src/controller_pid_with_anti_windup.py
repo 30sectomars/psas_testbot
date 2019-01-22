@@ -13,7 +13,7 @@ from geometry_msgs.msg import Twist
 
 #Gravity
 G = 9.81
-FILTER_SIZE = 10
+FILTER_SIZE = 20
 
 # IMU offset in real world
 if rospy.has_param('/use_simulation'):
@@ -98,10 +98,9 @@ class Controller:
 		self.diff_u = 0.0
 
 		self.y = sum(self.y_list)/len(self.y_list)
-		rospy.loginfo("avg y = %f", self.y)
-
+		
 		# insert new error in list and pop oldest value
-		self.e.insert(0, self.ref -self.y)
+		self.e.insert(0, self.ref - self.y)
 		del self.e[-1]
 		self.e_sum += self.e[0]
 		#rospy.loginfo("e = %f", -self.e[0])
@@ -133,8 +132,9 @@ class Controller:
 		if SIMULATION:
 			self.delta1 = -self.delta1
 
+		#rospy.loginfo("avg y = %f", self.y)
 		#self.delta1 = 0.0
-		#rospy.loginfo("y = %f",self.y_list[0])
+		rospy.loginfo("y = %f",self.y_list[0])
 		#rospy.loginfo("delta1 = %f",self.delta1)
 
 	def publish_all(self):

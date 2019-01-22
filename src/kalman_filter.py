@@ -14,6 +14,8 @@ from geometry_msgs.msg import Twist
 
 #Gravity
 G = 9.81
+FILTER_SIZE = 1
+FILTER_SIZE_U = 1
 
 if rospy.has_param('/use_simulation'):
 	SIMULATION = rospy.get_param('/use_simulation')
@@ -27,7 +29,7 @@ else:
 
 # get v_max
 if rospy.has_param('/v_max'):
-	V_MAX = rospy.get_param('/v_max')
+	V_MAX = 0.5 * rospy.get_param('/v_max')
 else:
 	V_MAX = 0.05
 
@@ -49,25 +51,42 @@ class Controller:
 		self.accel_y = 0.0
 		self.accel_z = 0.0
 
-		self.k1 = 0.4
-		self.k2 = 0.89
+		#Ricatti
+		#self.k1 = 0.2752
+		#self.k2 = 0.0707
 
-		self.alpha = 0.0
+		#Ricatti schneller
+		self.k1 = 0.4279
+		self.k2 = 0.1581
+
+		#Zustandsregler
+		#self.k1 = 0.4
+		#self.k2 = 0.899
+
+		#Zustandsregler
+		#self.k1 = 4.2
+		#self.k2 = 2.889
+
+		self.alpha_list = [0.0] * FILTER_SIZE
 
 		#system
-		self.Ad = np.array([[1.0000, 0.0050],[0.0000, 1.0000]])
-		self.Bd = np.array([[ 0.0000],[0.0100]])
-		self.Cd = np.array([ 1, 0])
-		self.R = 0.0256
-		self.Q = np.array([[0.01, 0.00],[0.00, 0.01]])
+		self.Ad = np.matrix([[1.0000, 0.0050],[0.0000, 1.0000]])
+		self.Bd = np.matrix([[0.0000],[0.0100]])
+		self.Cd = np.matrix([1.0, 1.0])
+		#self.R = 0.0256
+		self.R = 0.0016
+		if SIMULATION:
+			self.R = 0.0016
+		self.Q = np.matrix([[10.00, 0.00],[0.00, 1.00]])
 
-		self.K = np.array([[0.0],[0.0]])
+		self.K = np.matrix([[0.0],[0.0]])
 
 		self.alpha_correction = 0.0
 		self.psi_correction = 0.0
 		self.p_correction = 0.0
 
-		self.u = 0.0
+		self.u = [0.0] * FILTER_SIZE_U
+		self.u_avg = 0.0
 		self.delta1 = 0.0
 
 		if SIMULATION:
@@ -91,37 +110,41 @@ class Controller:
 
 	def control(self):
 		if (self.accel_y/G <= 1.0) & (self.accel_y/G > -1.0):
-			self.alpha = math.asin(self.accel_y/G) - OFFSET_Y
+			self.alpha_list.insert(0, math.asin(self.accel_y/G) - OFFSET_Y)
+			del self.alpha_list[-1]
+
+		alpha = sum(self.alpha_list)/len(self.alpha_list)
 
 		# prediction
 		alpha_prediction = self.alpha_correction + 0.005 * self.psi_correction 
-		psi_prediction = self.psi_correction + 0.01 * self.u
-		p_prediction = self.Ad * self.p_correction * np.transpose(self.Ad) + self.Q
-
+		psi_prediction = self.psi_correction + 0.01 * self.u_avg
+		p_prediction = self.Ad * self.p_correction * self.Ad.T + self.Q
+		
 		# correction
-		tmp = self.Cd * p_prediction * np.transpose(self.Cd) + self.R
-		if np.linalg.det(tmp) != 0:
-			self.K = p_prediction * np.transpose(self.Cd) * np.linalg.inv(tmp)
- 		self.alpha_correction = alpha_prediction + self.K[0][0] * (self.alpha - alpha_prediction)
- 		self.psi_correction = psi_prediction
+		self.K = p_prediction * self.Cd.T * np.linalg.inv(self.Cd * p_prediction * self.Cd.T + self.R)
+
+ 		self.alpha_correction = alpha_prediction + self.K[0][0] * (alpha - alpha_prediction)
+ 		self.psi_correction = psi_prediction + self.K[1][0] * (alpha - alpha_prediction)
  		self.p_correction = (np.identity(2) - self.K * self.Cd) * p_prediction
 
  		# Zustandsregler langsam
-		self.u = -self.k1 * self.alpha_correction - self.k2 * self.psi_correction
-		self.delta1 = -math.tan(0.015 / V_MAX * self.u) * 180 / math.pi
+		self.u.insert(0, -self.k1 * self.alpha_correction - self.k2 * self.psi_correction)
+		del self.u[-1]
+		self.u_avg = sum(self.u)/len(self.u)
+		self.delta1 = -math.tan(0.015 / V_MAX * self.u_avg) * 180 / math.pi
 		if SIMULATION:
 			self.delta1 = -self.delta1
 		#rospy.loginfo("u = %f", self.u)
-		#rospy.loginfo("alpha = %f", self.alpha)
-		rospy.loginfo("delta = %f", self.delta1)
+		rospy.loginfo("alpha = %f && delta = %f && u = %f", alpha, self.delta1, self.u_avg)
+		#rospy.loginfo("delta = %f", self.delta1)
 
 	def publish_all(self):
 		#self.delta1_pub.publish(self.delta1)
-		self.u_pub.publish(self.u)
+		self.u_pub.publish(self.u[0])
 		self.alpha_correction_pub.publish(self.alpha_correction)
 		self.psi_correction_pub.publish(self.psi_correction)
 		self.p_correction_pub.publish(self.p_correction)
-		self.alpha_pub.publish(self.alpha)
+		self.alpha_pub.publish(self.alpha_list[0])
 		msg = Twist()
 		msg.linear.x = V_MAX
 		msg.angular.z = self.delta1

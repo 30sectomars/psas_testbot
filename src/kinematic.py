@@ -161,20 +161,20 @@ class Robot:
         
     
     def delta1_callback(self, msg):
-        if msg.data > 3.0:
-            self.delta1 = 3.0
-        elif msg.data < -3.0:
-            self.delta1 = -3.0
+        if msg.data > 4.0:
+            self.delta1 = 4.0
+        elif msg.data < -4.0:
+            self.delta1 = -4.0
         else:
             self.delta1 = msg.data
         self.delta1 = self.delta1 / 180 * math.pi
         
     def twist_callback(self, msg):
         self.v1 = msg.linear.x * scaling
-        if msg.angular.z > 3.0:
-            self.delta1 = 3.0
-        elif msg.angular.z < -3.0:
-            self.delta1 = -3.0
+        if msg.angular.z > 4.0:
+            self.delta1 = 4.0
+        elif msg.angular.z < -4.0:
+            self.delta1 = -4.0
         else:
             self.delta1 = msg.angular.z
         self.delta1 = self.delta1 / 180 * math.pi

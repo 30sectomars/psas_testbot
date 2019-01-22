@@ -52,22 +52,16 @@ class Controller:
 		self.accel_z = 0.0
 		
 		# langsam neu
-		self.l1 = 1.09
-		self.l2 = 14.933
-		self.k1 = 15.0
-		self.k2 = 125.65
+		#self.l1 = 0.49
+		#self.l2 = 12.0
+		#self.k1 = 0.3089
+		#self.k2 = 0.0877
 
-		# langsam alt
-		#self.l1 = 1.09
-		#self.l2 = 59.4
-		#self.k1 = 0.12 #0.4
-		#self.k2 = 0.4997 #0.899
-
-		# zu schnell
-		#self.l1 = 0.79
-		#self.l2 = 31.2
-		#self.k1 = 17.4
-		#self.k2 = 5.85
+		# gut
+		self.l1 = 0.59
+		self.l2 = 17.4
+		self.k1 = 0.2752
+		self.k2 = 0.0707
 
 		self.alpha = 0.0
 		self.alpha_list = [0.0] * FILTER_SIZE
@@ -86,7 +80,8 @@ class Controller:
 		self.u_pub = rospy.Publisher('/controller/u', Float64, queue_size=10)
 		self.alphaB_pub = rospy.Publisher('/controller/alphaB', Float64, queue_size=10)
 		self.psiB_pub = rospy.Publisher('/controller/psiB', Float64, queue_size=10)
-		self.alpha_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
+		self.alpha_pub = rospy.Publisher('/controller/alpha_avg', Float64, queue_size=10)
+		self.alpha_list_pub = rospy.Publisher('/controller/alpha', Float64, queue_size=10)
 		self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
 		rospy.on_shutdown(self.shutdown)
@@ -98,11 +93,11 @@ class Controller:
 
 		self.alpha = sum(self.alpha_list)/len(self.alpha_list)
 
-		self.alphaB.insert(0, (self.alphaB[0] - 0.02 * self.psiB[0] + 2 * self.u + self.l1 * (self.alpha - self.alphaB[0])))
+		self.alphaB.insert(0, (self.alphaB[0] + 0.005 * self.psiB[0] + self.l1 * (self.alpha - self.alphaB[0])))
 		del self.alphaB[-1]
 
 		# verschobener Index bei alphaB weil vorher insert an stelle 0
-		self.psiB.insert(0, (self.psiB[0] - 0.2 * self.u + self.l2 * (self.alpha - self.alphaB[1])))
+		self.psiB.insert(0, (self.psiB[0] + 0.01 * self.u + self.l2 * (self.alpha - self.alphaB[1])))
 		del self.psiB[-1]
  
 		self.u = -self.k1 * self.alphaB[1] - self.k2 * self.psiB[1]
@@ -121,6 +116,7 @@ class Controller:
 		self.alphaB_pub.publish(self.alphaB[1])
 		self.psiB_pub.publish(self.psiB[1])
 		self.alpha_pub.publish(self.alpha)
+		self.alpha_list_pub.publish(self.alpha_list[0])
 		msg = Twist()
 		msg.linear.x = V_MAX
 		msg.angular.z = self.delta1

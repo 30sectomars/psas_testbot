@@ -19,8 +19,8 @@ twist = Twist()
 
 ############ definitions of functions ##################
 def callback(msg):
-    twist.linear.x = msg.axes[1]
-    twist.angular.z = msg.axes[3]
+    twist.linear.x = msg.axes[1] * 0.05
+    twist.angular.z = msg.axes[3] * 10
     
 #### definition of publisher/subscriber and services ###
 rospy.Subscriber('joy', Joy, callback)

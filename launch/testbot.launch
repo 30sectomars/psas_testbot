@@ -24,7 +24,7 @@
 
   <node pkg="rosserial_xbee" name="xbee" type="xbee_network.py" args="/dev/ttyUSB0 1" output="screen" />
 
-  <!--<node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/y /controller/y_avg $(find testbot)/rosbags"/>-->
+  <node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/alpha /controller/alpha_avg $(find testbot)/rosbags"/>
 
   <!-- Show in Rviz   -->
   <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find testbot)/launch/rviz_imu_config.rviz"/>-->

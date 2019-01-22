@@ -9,6 +9,6 @@
 
   <node name="kinematic" pkg="testbot" type="kinematic.py" />
 
-  <!--<node name="record" pkg="rosbag" type="record" args="record /controller/y_avg $(find testbot)/rosbags"/>-->
+  <node name="record" pkg="rosbag" type="record" args="record /controller/alpha /controller/u $(find testbot)/rosbags"/>
 
 </launch>
