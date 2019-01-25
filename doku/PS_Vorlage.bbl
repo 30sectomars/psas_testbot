@@ -21,13 +21,39 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-\bibitem{DFG.1998}
-{Deutsche Forschungsgemeinschaft}, \emph{{Vorschläge zur Sicherung guter
-  wissenschaftlicher Praxis: Denkschrift}}.\hskip 1em plus 0.5em minus
-  0.4em\relax Weinheim: Wiley-VCH, 1998.
+\bibitem{Burkert2017}
+\BIBentryALTinterwordspacing
+A.~Burkert, ``{Roboter {\"{u}}bernehmen die Welt der Produktion},'' 2017.
+  [Online]. Available:
+  \url{https://www.springerprofessional.de/industrieroboter/industrie-4-0/roboter-uebernehmen-die-welt-der-produktion/15236792}
+\BIBentrySTDinterwordspacing
 
-\bibitem{Kopka.1999}
-H.~Kopka and P.~W. Daly, \emph{{A Guide to LaTeX}}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+\bibitem{Kuther2018}
+\BIBentryALTinterwordspacing
+M.~Kuther, ``{Diese Roboter pr{\"{a}}gen unsere Zukunft},'' 2018. [Online].
+  Available:
+  \url{https://www.elektrotechnik.vogel.de/diese-roboter-praegen-unsere-zukunft-a-733751/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{ROBOTIS}
+\BIBentryALTinterwordspacing
+ROBOTIS, ``{XL-320 e-Manual}.'' [Online]. Available:
+  \url{http://emanual.robotis.com/docs/en/dxl/x/xl320/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Pang2018}
+Z.~Pang, S.~Raab, and J.~Tamm-morschel, ``{Validierung eines kinematischen n
+  -Trailer Modells f{\"{u}}r die Steuerung eines Schlangenroboters},'' pp.
+  1--10, 2018.
+
+\bibitem{LSM6DS33}
+\BIBentryALTinterwordspacing
+Life.augmented, ``{iNEMO LSM6DS33 Datasheet},'' pp. 1--77. [Online]. Available:
+  \url{https://www.st.com/resource/en/datasheet/lsm6ds33.pdf}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Imer2016}
+S.~Imer, M.~Kempkes, S.~R. Klein, and M.~Schr{\"{o}}der, ``{Kalibrierung einer
+  Inertial Measurement Unit ( IMU ) f{\"{u}}r ein UAV},'' pp. 1--11, 2016.
 
 \end{thebibliography}

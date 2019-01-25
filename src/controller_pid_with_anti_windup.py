@@ -13,7 +13,7 @@ from geometry_msgs.msg import Twist
 
 #Gravity
 G = 9.81
-FILTER_SIZE = 20
+FILTER_SIZE = 10
 
 # IMU offset in real world
 if rospy.has_param('/use_simulation'):
@@ -64,9 +64,9 @@ class Controller:
 
 		self.umax = 0.116
 		self.umin = -0.116
-		self.Kp = 2.0
+		self.Kp = 6.0
 		self.Ki = 0.1
-		self.Kd = 0.4
+		self.Kd = 4.0
 
 		self.dt = 1.0 / LOOP_RATE_IN_HZ
 		rospy.loginfo("dt = %f", self.dt)

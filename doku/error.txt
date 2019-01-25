@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/home/jens/psa_ws/src/psas_testbot/src/testbot.py", line 137, in <module>
-    talker()
-  File "/home/jens/psa_ws/src/psas_testbot/src/testbot.py", line 128, in talker
-    wheels_pub.publish(ww)
-  File "/opt/ros/kinetic/lib/python2.7/dist-packages/rospy/topics.py", line 886, in publish
-    raise ROSSerializationException(str(e))

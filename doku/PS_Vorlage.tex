@@ -17,72 +17,228 @@
 %%% Ab hier können Einträge von den Teilnehmern des Projektseminars gemacht werden,
 %%% wenn neben den LaTeX-Paketen aus der Datei PS.sty noch weitere gebraucht werden.
 
+\usepackage{hyperref}
+\usepackage{units}
+
 \begin{document}
-\newcommand{\euertitel}{Titel der Ausarbeitung}   % Titel hier eintragen!
-\newcommand{\betreuer}{Vorname Name, M.Sc. }  % Betreuerdaten hier eintragen (mit einem Leerzeichen am Ende)!
+\newcommand{\euertitel}{Regelung eines Schlangenroboters in einem Rohr}   % Titel hier eintragen!
+\newcommand{\betreuer}{Nicolai Schweizer, M.Sc. }  % Betreuerdaten hier eintragen (mit einem Leerzeichen am Ende)!
 
 \headsep 40pt
 \title{\euertitel}
 % Autorennamen in der Form "Vorname Nachname" angeben, alphabetisch nach Nachname sortieren,
 % nach dem letzen Autor kein Komma setzen, sondern mit \thanks abschließen
-\author{Autor~A,
-        Autor~B,
-        Autor~C
+\author{Jens Balze,
+		Nursura Demircan,
+        Elias Jargon,
+        Seyed Davood Mousavi
 \thanks{Diese Arbeit wurde von \betreuer unterstützt.}}
 
 \maketitle
 
 
 \begin{Zusammenfassung}
-Hierhin kommt eine kurze (5-6 Sätze) Zusammenfassung der Arbeit. In diesem Fall beschreibt das Dokument die \LaTeX -Vorlage für die Erstellung der Ausarbeitungen eines Projektseminars.
+Bereits heute werden mehrgliedrige, schlangenähnliche Roboter auf Bohrinseln und bei Ölpipelines für Inspektions-, Instandhaltungs- und Reparaturarbeiten eingesetzt. Diese Arbeit setzt sich mit der Regelung der Bewegung eines solchen Roboters, der zukünftig zur Inspektion innerhalb eines Teilchenbeschleunigers eingesetzt werden soll, auseinander. Zuerst wird die Herleitung des mathematischen Modells für die Umrechnung der Stellgröße des Reglers, Lenkwinkel, in den Winkel Alpha vorgestellt. Anschließend wird auf die Reglerauslegung (und Systemidentifikation(?)) eingegangen. Ein einfacher Versuchsaufbau zum Testen der Reglerauslegung ist ebenfalls Bestandteil dieser Arbeit. Zuletzt werden die  Testergebnisse des realen Systems und der Simulation vorgestellt, miteinander verglichen und bewertet. Abschließend wird ein Ausblick auf Erweiterungen dieser Arbeit gegeben.
 \end{Zusammenfassung}
 \vspace{6pt}
 
 \begin{abstract}
-This is the english translation of your \glqq Zusammenfassung \grqq.
+Already today, multi-limbed, snake-like robots are used on drilling rigs and oil pipelines for inspection, maintenance and repair. This paper deals with the regulation of the movement of such a robot, which should be used for the inspection within a particle accelerator in the future. First, the derivation of the mathematical model for the conversion of the measured manipulated variable of the controller, steering angle, into the angle alpha, is exposed. Subsequently, the controller design and system identification will be presented. Moreover, the test results of the real system and the simulation are presented, compared and evaluated. Finally, an outlook on extensions of this work is given.
 \end{abstract}
 
 
 \section{Einführung}
+Zahlreiche Roboter finden sich bereits heute etwa in der Elektrotechnik und Elektronik, im Maschinenbau, in der Luft- und Raumfahrt und in der Lebensmittelverpackung. Roboter sind  ein guter Ersatz für die Humanressource, da sie vielfach günstiger als ?Kollege? Mensch arbeiten, flexibel sind und stets weiterentwickelt werden, sodass sich eine Investition lohnt.
 
-Diese \LaTeX -Vorlage (PS\_Vorlage.tex) soll als
-Vorlage für die Erstellung der Ausarbeitungen des Projektseminars
-Automatisierungstechnik dienen. Zusätzlich wird die
-Style-Vorlage PS.cls benötigt. Die Dokumente basieren auf den IEEE
-Vorlagen bare\_jrnl.tex Version 1.2 und IEEEtran.cls Version 1.6b
-(Online auf den Autorenseiten des IEEE erhältlich) und sind für
-dieses Projektseminar angepasst worden. Viel Freunde bei der
-Erstellung eurer Arbeit.
+Roboter gehören zur großen Gruppe von Assistenzsystemen, die unterschiedliche Entwicklungsstufen und Reifegrade besitzen. Dazu gehören beispielsweise Smartphones, die informelle und kognitive Funktionen erfüllen können (wie auch Tablets, Smartwatches oder Smartglasses). Assistenzsysteme können aber auch Exoskelette sein, die Personen bei Bewegungen ergonomisch unterstützen, Roboter, die mit ihnen kooperieren und bei der Aufgabenbewältigung unterstützen oder humanoide Roboter, die komplex mit Personen zusammenarbeiten und auf unterschiedlichen Sinnesebenen (zum Beispiel visuell, auditiv, haptisch) Informationen mit den Personen austauschen.
 
-Bitte beachtet auch die Hinweise zum Verfassen wissenschaftlicher Texte in Anhang~\ref{sec:richtlinien} und~\ref{sec:notation}.
+Ein Serviceroboter ist eine frei programmierbare Bewegungseinrichtung, die teil- oder vollautomatisch Dienstleistungen verrichtet (z. B. Inspektionsroboter in Rohrleitungen, Serviceroboter im Pflegebereich, Rasenmähroboter, Industrieroboter).
 
-In der Einführung sollte kurz beschrieben werden, was die Problemstellung der Arbeit ist, welche Vorarbeiten es schon gibt (``Stand der Technik'' mit Verweis auf passende Quellen) und was der neue Beitrag der Arbeit ist. Am Ende der Einführung kann kurz auf die Struktur des Artikels eingegangen werden, z.B.: 
+Am Fachgebiet Regelungsmethoden und Robotik der TU Darmstadt wird derzeit ein Roboter entwickelt, der im Inneren eines Teilchenbeschleunigers zur visuellen Inspektion eingesetzt werden soll. Der Roboter soll das Rohr des Teilchenbeschleunigers durchfahren und Hindernisse wie Verunreinigungen oder unerwünschte Rückstände, die die einwandfreie Funktion des Teilchenbeschleunigers behindern, identifizieren. Solche hätten möglicherweise eine Beeinträchtigung der Strahlqualität während des Betriebs des Teilchenbeschleunigers zur Folge.
 
-Abschnitt~\ref{sec:grundlangen} führt wichtige Grundlagen ein und Abschnitt~\ref{sec:zus} fasst schließlich die Ergebnisse zusammen und gibt einen Ausblick.
+Der entwickelte Roboter besteht aus vier Modulen. Er wurde innerhalb von dieser Projektarbeit modifiziert. Beispielsweise ist das erste Modul deutlich kürzer als die anderen drei Module, zusätzlich ist es über ein passives Gelenk mit dem zweiten Modul verbunden, damit es sich leicht um die x-Achse vom Sensor!, die in die Bewegungsrichtung des Roboters zeigt, rollen lässt und der Rollwinkel mit einem Beschleunigungssensor explizit erfasst werden kann. Die weiteren Module sind über aktive Drehgelenke miteinander verbunden und lassen sich seitlich abwinkeln, sind jedoch ziemlich steif gegen Rollbewegungen.
 
-
-\section{Grundlagen}
-\label{sec:grundlangen}
-
-\subsection{Dies ist ein Unterabschnitt}
-Subsection text.
-\subsubsection{Dies ist ein Unter-Unterabschnitt}
-Subsubsection text.
+\nocite{Burkert2017}
+\nocite{Kuther2018}
 
 
 \section{Inbetriebnahme des Roboters}
 \label{sec:inbetriebnahme}
-In diesem Kapitel wird der Aufbau und die Inbetriebnahme des Roboters beschrieben.
+In diesem Kapitel wird der Aufbau des Roboters beschrieben, für den die modellierten Regler implementiert und getestet werden. Der Roboter besteht aus fünf Modulen, welche mit drei aktiven und einem passiven Gelenk miteinander verbunden sind. Da es sich hierbei um einen Prototypenbau handelt und eventuell Teile schnell abändern möchte, werden die Module in einem 3D-Druckverfahren aus Kunststoff hergestellt. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,height=2.5cm,keepaspectratio]{./pics/Roboter.jpg}
+	\caption{Foto des Roboters. Von links nach rechts befindet sich später in den Modulen: ein Gewicht (repräsentativ für verbaute Elektronik), ein Li-Po-Akku, der Mikrocontroller mit Funkmodul, ein weiteres Gewicht und die inertiale Messeinheit.}
+	\label{fig:roboter}
+\end{figure}
+
+Der Roboter besitzt acht einzeln ansteuerbare Servomotoren für den Antrieb. Am Ende dieser Motoren sitzen Räder, welche ebenfalls im 3D-Druckverfahren hergestellt werden. Diese haben den Vorteil, dass sie eine sehr geringe Verschmutzung durch Abrieb in dem Teilchenbeschleuniger erzeugen. Ein Nachteil dieser Konstruktion ist die geringe Haftreibung, welche in unseren Versuchen zu beobachten ist. Zum Lenken werden die gleichen Servomotoren wie in den Antrieben benutzt. Ein Lithium-Polymer-Akku versorgt den gesamten Roboter mit Strom.
+
+Die Datenverarbeitung der inertialen Messeinheit, sowie die Ansteuerung der Servomotoren und die Kommunikation mit dem Computer, übernimmt ein Mikrocontroller.
 
 \subsection{Mikrocontroller}
+Die Größe des zu durchfahrenden Strahlrohrs eines Ringbeschleunigers bedingt eine schmale Bauform des Roboters. Somit ist auch die Größe des einzusetzenden Mikrocontrollers eingeschränkt. In diesem Projekt wird von der Firma PJRC das Teensy 3.6 Board eingesetzt, welches über die geforderte Baubreite und Rechenleistung verfügt. Mit einer Abmessung von nur 6,1cm x 1,8cm passt es sehr gut in eines der Robotermodule hinein. Ein Arm Cortex M4 Prozessor mit 180 MHz und 32-bit Technologie ist verbaut. Dank einer vom Hersteller zur Verfügung gestellten Bibliothek kann das Teensy Board mithilfe von Arduino programmiert werden.\footnote{Online-Bibliothek verfügbar unter \url{https://www.pjrc.com/teensy/teensyduino.html}, zuletzt geprüft am 24.01.2019}
+
+Der ausgewählte Mikrocontroller besitzt eine Betriebsspannung von 3,3 V. Das bedeutet für die Ansteuerung der Servomotoren ist ein Pegelumsetzer (3,3 V auf 5 V) eingesetzt. Für die vollständigen Stromversorgung aller auf dem Roboter verbauten Geräte mit dem LiPo-Akku sind zusätzliche Spannungswandler für 3,3 V, 5 V und 7,4 V nötig.
 
 \subsection{Servomotoren}
+Wie schon im vorherigen Abschnitt beschrieben sind in dem Roboter elf baugleiche Servomotoren eingebaut. Acht dienen als Antrieb, während die anderen drei für die Lenkung sorgen. Die eingebauten Motoren kommen von der Firma ROBOTIS und heißen Dynamixel XL-320. Laut Datenblatt \cite{ROBOTIS} beträgt die Betriebsspannung 7,4 V. Bei gegebener Spannung liegt die maximale Drehzahl bei 114 \nicefrac{U}{min} und das maximale Drehmoment bei 0,39 Nm. Beides im lastfreien Betrieb. Für die Stromversorgung haben die Servos je zwei Anschlüsse. Ein weiterer Anschluss dient zur seriellen Kommunikation. Dieser ermöglicht neben einer unidirektionalen Kommunikation ein Half-Duplex-Modus. Somit lassen sich einige Parameter des internen Controllers auslesen.
+
+Die Motoren bieten zwei unterschiedliche Betriebsmodi. Zum einem den Wheel-Mode, zum Ansteuern der Räder, und zum anderem den Joint-Mode, zur Ansteuerung der Gelenke. An die Radmotoren wird ein Wert zwischen 0 und 1023 für eine Drehung gegen den Uhrzeigersinn gesendet, beziehungsweise 1024 bis 2047 für eine Drehung im Uhrzeigersinn. Hierbei steht der jeweils niedrige Wert für 0\% und der höhere Wert für 100\%. Die Gelenkmotoren bekommen Winkelangaben gesendet. Die Daten werden vom Mikrocontroller aufbereitet seriell an die Motoren weitergesendet. Hierzu steht eine Bibliothek bereit.\footnote{Online-Bibliothek verfügbar unter \url{https://github.com/hackerspace-adelaide/XL320}, zuletzt geprüft am 24.01.2019}
+\nocite{Pang2018}
 
 \subsection{Inertiale Messeinheit}
+Zur Messung der Regelgröße wird eine inertiale Messeinheit (IMU) verwendet. Diese misst die Beschleunigung in alle Raumrichtungen und die Winkelbeschleunigungen um alle Koordinatenachsen. Durch Integration der Winkelbeschleunigungen können die Drehrate und die Lage bestimmt werden. Zum Einsatz in diesem Projekt kommt eine Messeinheit von iNEMO. Sie wird unter der Typenbezeichnung LSM6DS33 gelistet. Dieser Chip arbeitet im Performance-Mode mit bis zu 1,66 kHz und einer Auflösung von +/- 2G, beziehungsweise +/- 250 DPS.\cite{LSM6DS33} Da der Roboter mit einer niedrigen Geschwindigkeit durch einen Ringbeschleuniger fahren wird, kann davon ausgegangen werden, dass wir nicht mit großen linearen Beschleunigungen und großen Winkelbeschleunigungen konfrontiert werden. Somit ist die gewählte Auflösung ausreichend gewählt und entspricht der Standardeinstellung der Messeinheit.
+
+Zur Verbesserung der Genauigkeit des Beschleunigungssensors wird eine Biaskorrektur auf dem Mikrocontroller durchgeführt.\cite{Imer2016} Die Messeinheit kommuniziert mittels I2C mit dem Board. Hierfür wird ebenfalls eine Arduino-Bibliothek angeboten.\footnote{Online-Bibliothek verfügbar unter \url{https://github.com/pololu/lsm6-arduino}, zuletzt geprüft am 24.01.2019}
 
 \subsection{Ansteuerung und Kommunikation}
+Für eine kabellose Kommunikation mit dem Roboter wird das Funkmodul XBee der Firma Digi International verwendet. Die Verbindung wird im 2,4 GHz Bereich hergestellt. Das auf dem Roboter verbaute Modul kommuniziert ebenfalls über eine serielle Schnittstelle mit dem Mikrocontroller. Für die Verbindung mit einen Computer wird ebenfalls ein XBee Funkmodul verwendet, welches per USB angeschlossen wird. Somit können die Berechnungen des Reglers auf dem Computer ausgeführt und die Lenkbefehle wieder zurück an den Roboter gesendet werden. Hierfür wird das Robot Operating System\footnote{Robot Operating System: \url{http://wiki.ros.org/de}} (ROS) verwendet. Die ROS Bibliotheken und Werkzeuge sind für die Verwendung mit linuxbasierten Betriebssystemen entwickelt. Somit lässt es sich nicht direkt auf dem Mikrocontroller installieren. Für die Kommunikation besteht eine Bibliothek.\footnote{ROS Serial: \url{http://wiki.ros.org/rosserial_python}, zuletzt geprüft am 24.01.2019}
 
-\subsection{Schaubild}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,height=5.5cm,keepaspectratio]{./pics/Kommunikation.png}
+	\caption{Kommunikationsstruktur des Roboters. Vom Computer inklusive Kinematik- und Reglermodell, über ROS und XBee Kommunikation und der Ansteuerung von Sensorik und Aktorik auf dem Mikrocontroller.}
+	\label{fig:Kommunikation}
+\end{figure}
+
+In Abbildung \ref{fig:Kommunikation} wird die Kommunikations Struktur verdeutlicht. Hier ist zu erkennen, dass das Modell für die Regelung auf dem Computer ausgeführt wird und dessen Ergebnisse unter Verwendung von ROS, ROS-Serial und XBee auf den Mikrocontroller übertragen werden. Dort werden anschließend die passenden Steuerungsbefehle an die Servomotoren ausgegeben.
+
+\subsection{Simulation und Teststrecke}
+Zum Testen der implementierten Reglermodelle stehen zwei Testumgebungen bereit. Einerseits eine Simulationsumgebung mit Gazebo\footnote{Roboter Simulation mit Gazebo: \url{http://gazebosim.org/}}, andererseits eine von uns aufgebaute reale Teststrecke. Diese beiden Versionen werden in den folgenden Abschnitten kurz Vorgestellt. \\
+
+\subsubsection{Simulation}
+Zu Beginn der Projektarbeit wurde eine Simulationsumgebung bereitgestellt, welche den vollständigen Roboter und ein gebogenes Rohr beinhaltet. Diese Simulation ist sehr realitätsnah und kann für schnelles Testen der Reglerimplementierungen genutzt werden. Die Simulation beinhaltet, wie das original, elf Motoren (acht für den Antrieb und drei für die Gelenke), und ein passives Gelenk. Ebenfalls wird eine inertiale Messeinheit simuliert. Somit kann man mit kleinen Anpassungen an die Schnittstelle, dieselben Regleralgorithmen in der Realität, wie auch in der Simulation, testen und dementsprechend Daten aufzeichnen. Somit ist gewährleistet, dass der Roboter immer im selben Rohr, mit dem selben Anfangszustand, startet.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Simulation.png}
+	\caption{Roboter fährt geregelt durch ein Rohr in der Simulation.}
+	\label{fig:simulation}
+\end{figure}
+
+\subsubsection{Teststrecke}
+Zum Testen der Regelung steht leider nicht ein Originalrohr aus dem Teilchenbeschleuniger zur Verfügung. Hierbei ist auch zu beachten, dass der Roboter universell in verschiedenen Rohren eingesetzt werden soll und dass sich der Rohrradius im Teilchenbeschleuniger auch ändert. Daher ist es nicht sehr wichtig das Rohr exakt nachzubilden. Als Rohrersatz dient daher ein flexibles Lüftungsrohr, welches längs der Rohrachse halbiert wird. Dadurch kann man beobachten, wie sich der Roboter verhält. Zusätzlich ermöglicht das Aufschneiden ein Aufbiegen des Rohres und somit eine Veränderung des Rohrradius. Dieses Setup wurde bereits zu Beginn der Arbeit aufgebaut. Die Teststrecke besteht aus einem geraden Abschnitt am Anfang des Rohres, um zu testen, wie sich der Roboter beim Einschalten verhält, besonders dann, wenn er nicht parallel zur Rohrachse eingesetzt wird. Danach folgt zuerst eine Rechtskurve, gefolgt on einer Linkskurve, um die Kurvenfahrt zu untersuchen. Dabei wird der Kurvenradius wesentlich enger gewählt als im original um den Roboter unter verschärften Bedingungen testen zu können.
+
+Bedingt durch die Starken Unebenheiten des Lüftungsrohres und dem niedrigen Reibungskoeffizienten, zwischen Rohr und Räder, wurde eine Anti-Rutsch Folie in das Rohr geklebt. Diese verhindert ein Rutschen des Roboters im Rohr. \\
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Teststrecke.jpg}
+	\caption{Teststrecke mit geradem Anteil und erster Kurve. Gut zu sehen ist die eingeklebte Anti-Rutsch-Folie zur Verbesserung der Haftreibung.}
+	\label{fig:simulation}
+\end{figure}
+
+\section{Modellbildung}
+\label{sec:modell}
+Als Grundlage zur Reglerauslegung dient ein mathematisches Modell, welches die Bewegung des Roboters im Rohr beschreibt. Dieses Modell wird unter der Annahme einiger Vereinfachungen aus der Kinematik des Systems mit anschließender Linearisierung hergeleitet. Im Folgenden wird die Herleitung beschrieben.
+
+Zunächst wird das Rohr als ein kreisförmiger Zylinder angenommen. Das Inertialsystem liegt am Beginn des Rohres im Mittelpunkt der kreisförmigen Grundfläche. Die z-Achse zeigt entlang des Rohres (Abbildung \ref{fig:rohrkoordinaten}). Im Teilchenbeschleuniger ist der Rohrquerschnitt ellipsenförmig. Da sich der Roboter aber ausschließlich im unteren Bereich des Rohres aufhält, wird für das Modell eine kreisförmige Querschnittsfläche verwendet. Zudem werden Biegungen entlang der z-Achse vernachlässigt und als Störung angenommen.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Rohrkoordinaten.JPG}
+	\caption{Rohrkoordinatensystem.}
+	\label{fig:rohrkoordinaten}
+\end{figure}
+
+Um die Position des Roboters im Rohr zu beschreiben, gibt es verschiedene Möglichkeiten. Da die Position in z-Richtung für die Regelung nicht relevant ist und sich der Roboter immer auf der Rohroberfläche befindet, genügt eine Variable als Minimalkoordinate um die Position des Roboters zu beschreiben. Abbildung \ref{fig:minimalkoordinaten} zeigt drei Mögliche Variablen. Die möglichen Variablen sind die Auslenkung in y-Richtung $y_{Roboter}$, Die Kreisbogenlänge $b$ zwischen dem untersten Punkt im Rohr und bis zum Roboter und der Winkel $\alpha$. $\alpha$ ist der Winkel zwischen der x-Achse und einer Verbindungslinie vom Mittelpunkt des Rohrquerschnittes zum Mittelpunkt der vorderen Radachse. Zur Berechnung der y-Auslenkung werden trigonometrische Funktionen verwendet. Um die dadurch entstehenden Nichtlinearitäten zu vermeiden wird sich gegen diese Variable entschieden. Der Winkel $\alpha$ entspricht näherungsweise dem Neigungswinkel $\varphi$, der von der IMU gemessen werden kann (Vergleiche Sektion \ref{sec:messung}). Deshalb wird sich im mathematischen Modell für diesen Winkel als Regelgröße entschieden. Ziel der Regelung ist es, $\alpha$ zu null zu bringen, damit sich der Roboter an unterster Stelle im Rohr befindet. Der Zustand des Roboters wird zusätzlich durch den Gierwinkel beschrieben. Dieser stellt den Winkel zwischen der z-Achse (Rohrachse) und der Bewegungsrichtung des Roboters an.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Minimalkoordinaten.JPG}
+	\caption{Mögliche Minimalkoordinaten.}
+	\label{fig:minimalkoordinaten}
+\end{figure}
+
+Als Stellgröße für das System kann der Lenkwinkel $\delta_{1}$ des Roboters vorgegeben werden. Aus diesem ergibt sich laut \cite[S. 6]{Pang2018} aus dem Abstand der ersten Radachse zur Spitze des Roboters $L_{P_1J_1}$ und der Geschwindigkeit $v_{Roboter}$ für die Gierrate
+\begin{equation}
+	\dot{\psi} = \frac{\tan(\delta_1)}{L_{P_1J_1}}v_{Roboter}
+	\label{eq:psi_punkt}
+\end{equation}
+Durch Integration ergibt sich die Zustandsvariable $\psi$.Die Geschwindigkeit des Roboters $v_{Roboter}$ liegt Konstant bei 0,05 \nicefrac{m}{s}. Im nächsten Schritt wird die Geschwindigkeit in einer Umfangs- und eine Axialkomponente bezogen auf den Rohrradius aufgeteilt. Diese berechnen sich nach:
+\begin{equation}
+	v_u = v_{Roboter} \cdot \sin(\psi)
+	\label{eq:v_u}
+\end{equation}
+\begin{equation}
+	v_z = v_{Roboter} \cdot \cos(\psi)
+	\label{eq:v_z}
+\end{equation}
+Aus der Umfangskomponente  $v_u$ und dem Rohrradius $r_{Rohr}$ ergibt sich die Änderungsrate des Winkels $\alpha$ nach der Formel:
+\begin{equation}
+	\dot{\alpha} = \frac{v_u}{r_{Rohr}}
+	\label{eq:alpha_punkt}
+\end{equation}
+Und somit durch Integration die zweite Zustandsvariable $\alpha$, welcher der Regelgröße entspricht.
+
+Zuletzt wird noch die Störung berechnet, die in einer Kurve auf das System wirkt. Dazu wird die Geschwindigkeitskomponente in Axialrichtung $v_z$ verwendet. Wird angenommen der Roboter fährt geradeaus, so biegt sich die Rohrachse mit
+\begin{equation}
+	\dot{\psi}_{stör} = \frac{v_z}{r_{Kurve}}
+	\label{eq:psi_punkt_stoer}
+\end{equation}
+weg von der Bewegungsrichtung des Roboters und wirkt so als Störung auf den Eingang des Systems. Da der Gierwinkel im Bereich von \textbf{-??? bis +???} liegt, kann der Kosinus in Formel \ref{eq:v_z} zu eins angenommen werden und somit entspricht $v_z = v_{Roboter}$. Der Kurvenradius im Teilchenbeschleuniger $r_{Kurve}$ beträgt 52632 mm, sodass sich in der Kurve eine sehr geringe Störung von ca $9,5\cdot10^{-4}$ \nicefrac{rad}{s}.
+
+Letztendlich wird auch Formel \ref{eq:v_u} durch die Kleinwinkeländerung linearisiert. Die Nichtlinearität, die durch den Eingang $\delta_1$ entsteht, wird vermieden, indem $\dot{\psi}$ als Eingang verwendet wird und daraus der benötigte Lenkwinkel berechnet wird. Die Formel für $\delta_1$ ergibt sich durch umstellen von \ref{eq:psi_punkt} zu
+\begin{equation}
+	\delta_1 = \arctan(\dot{\psi}\frac{L_{P_1J_1}}{v_{Roboter}}
+	\label{eq:delta_eins}
+\end{equation}
+Somit ergibt sich das Gesamtmodell in Abbildung \ref{fig:gesamtmodell}. Die Übertragungsfunktion lautet:
+\begin{equation}
+	G_{Strecke}(s) = \frac{v_{Roboter}}{r_{Rohr}} \cdot \frac{1}{s^2}
+\end{equation}
+Die Halbachsen der Ellipse im Teilchenbeschleuniger betragen 30 mm und 60 mm, Deshalb wird der Rohrradius zu 100 mm angenommen, um den unteren Bereich des elliptischen Rohres anzunähern.
+
+Eine Digitalisierungder Strecke mittels z-Transformation führt zu
+\begin{equation}
+	G_{Strecke}(z) = \frac{1}{T^2} \cdot \frac{r_{Rohr}}{v_{Roboter}} \cdot \frac{z-1}{z+0,5}
+\end{equation}
+unter Berücksichtigung des Abtast-Halte-Gliedes.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Gesamtmodell.JPG}
+	\caption{Blockschaltbild der Regelstrecke}
+	\label{fig:gesamtmodell}
+\end{figure}
+
+\section{Messung}
+\label{sec:messung}
+Wie schon in Sektion \ref{sec:inbetriebnahme} beschrieben, verwendet der Roboter eine IMU. Das Koordinatensystem dieser weicht aber von dem Koordinatensystem der Modellbildung ab (Vergleiche Abbildung \ref{fig:roboter} und Abbildung \ref{fig:rohrkoordinaten}). Ein Komplementärfilter nutzt neben der Integration auch die Anteile der Erdbeschleunigung an den einzelnen Koordinatenachsen und vergleicht die Werte der Integration der Winkelbeschleunigungen. So wird das Messrauschen verringert und ein Drift der Lagem welcher durch aufsummieren von Messfehlern entsteht, wird verhindert.
+
+Nimmt man an, dass das Gelenk zwischen dem ersten und dem zweiten Modul des Roboters nicht eingeknickt ist, so ergibt sich der Winkel $\alpha$ aus dem Rollwinkel $\varphi$ und dem Nickwinkel $\theta$. Durch den großen Radabstand zwischen der ersten Achse und der zweiten Achse des Roboters, bleibt der Nickwinkel beim Auffahren im Rohr so gering, dass er nicht Messbar ist und nahezu keinen Einfluss auf $\alpha$ hat. Sodass $\alpha = \varphi$ gesetzt werden kann.
+
+Da die Werte für die Lage durch den Komplementärfilter an Auflösung verlieren, wird der Rollwinkel $\varphi$ direkt aus den Anteilen der Erdbeschleunigung auf den einzelnen Achsen berechnet. Hier kann sowohl der Anteil in z-Richtung verwendet werden
+\begin{equation}
+	\varphi = \arccos(\frac{a_z}{-g})
+	\label{eq:phi_z}
+\end{equation}
+als auch der Anteil in y-Richtung
+\begin{equation}
+	\varphi = \arcsin(\frac{a_y}{-g})
+	\label{eq:phi_y}
+\end{equation}
+Es wird sich für eine Berechnung nach \ref{eq:phi_y} entschieden, da $a_y$ im Bereich von $\varphi = 0$ stärker variiert, denn der Sinus ist in diesem Bereich wesentlich steiler, als der Kosinus. Damit wird ein größeres Verhältnis zwischen Messwert und Rauschen geschaffen.
+
+Aus dem Nickwinkel und dem Rollwinkel könnte auch die Zustandsgröße $\psi$ (Gierwinkel) berechnet werden, solange die IMU nicht parallel zur yz-Ebene ausgerichtet ist. In der yz-Ebene kommt es zu einer Singularität, die die Berechnung verhindert. Allerdings kann diese Berechnung durch den zu kleinen Nickwinkel nicht angewendet werden. Auch die Bestimmung des Gierwinkels durch Integration ist möglich, da als Bezugspunkt die Rohrachsenrichtung dient (Vergleiche Sektion \ref{sec:modell}). Dieser Bezugspunkt ändert sich mit dem unbekannten Verlauf des Rohres. Bei der Integration der Winkelbeschleunigung hingegen bleibt der Bezugspunkt immer gleich, bzw. ist mit einem Drift behaftet.
+
+Die Position des Sensors ist oberhalb der ersten Radachse. Da der Roboter sehr steig ist für Torsion um seine Achse in Bewegungsrichtung (rote Achse in Abbildung \ref{fig:passives_gelenk}), bleibt der Rollwinkel des vorderen Moduls näherungsweise  gleich zu den anderen Modulen. Dies hat zur Folge, dass das erste Modul sich nicht verdreht und kein Rollwinkel gemessen werden kann. Fährt der Roboter beispielsweise an der rechten Rohrwand auf, so verliert das linke Rad den Bodenkontakt und der Rollwinkel bleibt näherungsweise gleich zu dem aktuellen Rollwinkel der restlichen Module, die sich noch in unteren Teil des Rohres befinden. Die Regelabweichung ist also nicht messbar. Daher wird ein passives Gelenk in das erste Modul eingefügt, dass eine Rollbewegung unabhängig von den anderen Modulen zulässt. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Gelenk.JPG}
+	\caption{Passives Gelenk zur Bestimmung des Rollwinkels}
+	\label{fig:passives_gelenk}
+\end{figure}
+
+
+\section{Regler}
+\label{sec:regler}
+
+\section{Auswertung}
+\label{sec:auswertung}
 
 \section{Zusammenfassung}
 \label{sec:zus}
@@ -90,7 +246,7 @@ Hier die wichtigsten Ergebnisse der Arbeit in 5-10 Sätzen zusammenfassen. Dies s
 
 
 \appendices
-\section{Optionaler Titel}
+%\section{Optionaler Titel}
 Anhang eins.
 \section{}
 Anhang zwei.
@@ -114,13 +270,6 @@ Im Folgenden werden einige wichtige Richtlinien zusammengefasst. Die Aufzählung 
  sie hängt quadratisch von der Höhe $h$ ab.
 \end{itemize}
 
-\begin{figure}
-	\centering
-	\fbox{\parbox[c][2cm][c]{7cm}{\centering Abbildung (z.B. ein Plot)}}
-	\caption{Gute Abbildungen unterstützen das Verständnis.}
-	\label{fig:example_start}
-\end{figure}
-
 
 \section{Hinweise zur Notation}
 \label{sec:notation}
@@ -142,7 +291,7 @@ unterstützt hat (Korrekturlesen, fachliche Hinweise,...), dann ist hier der dafü
 
 
 %%% Literatur (mit bibtex, Empfehlung) %%%
-\nocite{Kopka.1999} % (nur Test, damit DSf-Eintrag in Literaturverzeichnis angezeigt wird)
+%\nocite{LSM6DS33} % (nur Test, damit DSf-Eintrag in Literaturverzeichnis angezeigt wird)
 \bibliographystyle{IEEEtran}
 \bibliography{Literatur}
 

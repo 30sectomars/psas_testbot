@@ -83,7 +83,7 @@ class Controller:
 
 		self.alpha_correction = 0.0
 		self.psi_correction = 0.0
-		self.p_correction = 0.0
+		self.p_correction = np.matrix([[2.0, 0.0], [0.0, 2.0]])
 
 		self.u = [0.0] * FILTER_SIZE_U
 		self.u_avg = 0.0
