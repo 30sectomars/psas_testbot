@@ -8,7 +8,6 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: Literatur.bib
-Warning--I didn't find a database entry for "DFG.1998"
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
@@ -16,45 +15,45 @@ Warning--empty journal in Pang2018
 Warning--empty journal in Imer2016
 
 Done.
-You've used 6 entries,
+You've used 7 entries,
             4087 wiz_defined-function locations,
-            859 strings with 8307 characters,
-and the built_in function-call counts, 3145 in all, are:
-= -- 233
-> -- 61
-< -- 18
-+ -- 31
-- -- 11
-* -- 147
-:= -- 528
-add.period$ -- 12
-call.type$ -- 6
-change.case$ -- 6
-chr.to.int$ -- 45
-cite$ -- 8
-duplicate$ -- 229
-empty$ -- 260
-format.name$ -- 13
-if$ -- 685
+            863 strings with 8386 characters,
+and the built_in function-call counts, 3550 in all, are:
+= -- 259
+> -- 67
+< -- 20
++ -- 33
+- -- 12
+* -- 163
+:= -- 590
+add.period$ -- 14
+call.type$ -- 7
+change.case$ -- 7
+chr.to.int$ -- 51
+cite$ -- 9
+duplicate$ -- 267
+empty$ -- 311
+format.name$ -- 14
+if$ -- 783
 int.to.chr$ -- 0
-int.to.str$ -- 6
-missing$ -- 46
-newline$ -- 49
-num.names$ -- 6
-pop$ -- 139
+int.to.str$ -- 7
+missing$ -- 51
+newline$ -- 52
+num.names$ -- 7
+pop$ -- 156
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 222
+skip$ -- 251
 stack$ -- 0
-substring$ -- 108
-swap$ -- 155
+substring$ -- 115
+swap$ -- 172
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 6
+type$ -- 7
 warning$ -- 2
-while$ -- 18
-width$ -- 7
-write$ -- 77
-(There were 3 warnings)
+while$ -- 20
+width$ -- 8
+write$ -- 84
+(There were 2 warnings)

@@ -38,33 +38,33 @@
 
 
 \begin{Zusammenfassung}
-Bereits heute werden mehrgliedrige, schlangenähnliche Roboter auf Bohrinseln und bei Ölpipelines für Inspektions-, Instandhaltungs- und Reparaturarbeiten eingesetzt. Diese Arbeit setzt sich mit der Regelung der Bewegung eines solchen Roboters, der zukünftig zur Inspektion innerhalb eines Teilchenbeschleunigers eingesetzt werden soll, auseinander. Zuerst wird die Herleitung des mathematischen Modells für die Umrechnung der Stellgröße des Reglers, Lenkwinkel, in den Winkel Alpha vorgestellt. Anschließend wird auf die Reglerauslegung (und Systemidentifikation(?)) eingegangen. Ein einfacher Versuchsaufbau zum Testen der Reglerauslegung ist ebenfalls Bestandteil dieser Arbeit. Zuletzt werden die  Testergebnisse des realen Systems und der Simulation vorgestellt, miteinander verglichen und bewertet. Abschließend wird ein Ausblick auf Erweiterungen dieser Arbeit gegeben.
+Bereits heute werden mehrgliedrige, schlangenähnliche Roboter auf Bohrinseln und bei Ölpipelines für Inspektions-, Instandhaltungs- und Reparaturarbeiten eingesetzt. Diese Arbeit setzt sich mit der Regelung der Bewegung eines solchen Roboters, der zukünftig zur Inspektion innerhalb eines Teilchenbeschleunigers eingesetzt werden soll, auseinander. Dabei soll die Fahrt des Roboters so geregelt werden, dass der Roboter sich an unterster Stelle im Rohr bewegt und zusätzlich der Gierwinkel, der den Winkel zwischen der z-Achse (Rohrachse) und der Bewegungsrichtung des Roboters darstellt, zu Null geregelt wird. Zuerst wird die Herleitung des mathematischen Modells, das die Roboterbeweung im zylinderförmigen Rohr beschreibt, vorgestellt. Anschließend wird auf die Reglerauslegung eingegangen. Ein einfacher Versuchsaufbau zum Testen der Reglerauslegung ist ebenfalls Bestandteil dieser Arbeit. Zuletzt werden die entworfenen Regler anhand der Testergebnisse des realen Systems und der Simulation bewertet und miteinander verglichen. Abschließend wird ein Ausblick auf Erweiterungen dieser Arbeit gegeben.
 \end{Zusammenfassung}
 \vspace{6pt}
 
 \begin{abstract}
-Already today, multi-limbed, snake-like robots are used on drilling rigs and oil pipelines for inspection, maintenance and repair. This paper deals with the regulation of the movement of such a robot, which should be used for the inspection within a particle accelerator in the future. First, the derivation of the mathematical model for the conversion of the measured manipulated variable of the controller, steering angle, into the angle alpha, is exposed. Subsequently, the controller design and system identification will be presented. Moreover, the test results of the real system and the simulation are presented, compared and evaluated. Finally, an outlook on extensions of this work is given.
+Already today, multi-limbed, snake-like robots are used on drilling rigs and oil pipelines for inspection, maintenance and repair. This paper deals with the regulation of the movement of such a robot, which should be used for the inspection within a particle accelerator in the future. The aim is to control the motion of the robot so that the robot moves at the lowest point in the pipe and in addition the yaw angle, which represents the angle between the z-axis (pipe axis) and the direction of movement of the robot, is regulated to zero. First, the derivation of the mathematical model describing the robot motion in the cylindrical pipe is presented. Subsequently, the controller design will be presented. A simple test setup for testing the controller design is also part of this work. Lastly, evaluation and comparison oft the controller designs against each other, based on the test results of the real system and the simulation, are discussed. Finally, an outlook on extensions of this work is given.
 \end{abstract}
 
 
 \section{Einführung}
-Zahlreiche Roboter finden sich bereits heute etwa in der Elektrotechnik und Elektronik, im Maschinenbau, in der Luft- und Raumfahrt und in der Lebensmittelverpackung. Roboter sind  ein guter Ersatz für die Humanressource, da sie vielfach günstiger als ?Kollege? Mensch arbeiten, flexibel sind und stets weiterentwickelt werden, sodass sich eine Investition lohnt.
+Zahlreiche Roboter finden sich bereits heute etwa in der Elektrotechnik und Elektronik, im Maschinenbau, in der Luft- und Raumfahrt und in der Lebensmittelverpackung. Roboter sind  ein guter Ersatz für die Humanressource, da sie vielfach günstiger als ?Kollege? Mensch arbeiten, flexibel sind und stets weiterentwickelt werden, sodass sich eine Investition lohnt. 
 
-Roboter gehören zur großen Gruppe von Assistenzsystemen, die unterschiedliche Entwicklungsstufen und Reifegrade besitzen. Dazu gehören beispielsweise Smartphones, die informelle und kognitive Funktionen erfüllen können (wie auch Tablets, Smartwatches oder Smartglasses). Assistenzsysteme können aber auch Exoskelette sein, die Personen bei Bewegungen ergonomisch unterstützen, Roboter, die mit ihnen kooperieren und bei der Aufgabenbewältigung unterstützen oder humanoide Roboter, die komplex mit Personen zusammenarbeiten und auf unterschiedlichen Sinnesebenen (zum Beispiel visuell, auditiv, haptisch) Informationen mit den Personen austauschen.
+Roboter gehören zur großen Gruppe von Assistenzsystemen, die unterschiedliche Entwicklungsstufen und Reifegrade besitzen. Dazu gehören beispielsweise Smartphones, die informelle und kognitive Funktionen erfüllen können (wie auch Tablets oder Smartwatches). Assistenzsysteme können aber auch Exoskelette sein, die Personen bei Bewegungen ergonomisch unterstützen, Roboter, die mit ihnen kooperieren und bei der Aufgabenbewältigung unterstützen oder humanoide Roboter, die komplex mit Personen zusammenarbeiten und auf unterschiedlichen Sinnesebenen (zum Beispiel visuell, auditiv, haptisch) Informationen mit den Personen austauschen.
 
 Ein Serviceroboter ist eine frei programmierbare Bewegungseinrichtung, die teil- oder vollautomatisch Dienstleistungen verrichtet (z. B. Inspektionsroboter in Rohrleitungen, Serviceroboter im Pflegebereich, Rasenmähroboter, Industrieroboter).
 
-Am Fachgebiet Regelungsmethoden und Robotik der TU Darmstadt wird derzeit ein Roboter entwickelt, der im Inneren eines Teilchenbeschleunigers zur visuellen Inspektion eingesetzt werden soll. Der Roboter soll das Rohr des Teilchenbeschleunigers durchfahren und Hindernisse wie Verunreinigungen oder unerwünschte Rückstände, die die einwandfreie Funktion des Teilchenbeschleunigers behindern, identifizieren. Solche hätten möglicherweise eine Beeinträchtigung der Strahlqualität während des Betriebs des Teilchenbeschleunigers zur Folge.
+Am Fachgebiet Regelungsmethoden und Robotik der TU Darmstadt wird derzeit ein schlangenähnlicher Roboter entwickelt, der das Innere eines Teilchenbeschleunigers visuell überwachen soll. Der Roboter soll das Rohr des Teilchenbeschleunigers durchfahren und Hindernisse wie Verunreinigungen oder unerwünschte Gegenstände, die die einwandfreie Funktion des Teilchenbeschleunigers behindern, identifizieren. Solche hätten möglicherweise eine Beeinträchtigung der der Qualität des Strahls während des Betriebs des Teilchenbeschleunigers zur Folge.
 
-Der entwickelte Roboter besteht aus vier Modulen. Er wurde innerhalb von dieser Projektarbeit modifiziert. Beispielsweise ist das erste Modul deutlich kürzer als die anderen drei Module, zusätzlich ist es über ein passives Gelenk mit dem zweiten Modul verbunden, damit es sich leicht um die x-Achse vom Sensor!, die in die Bewegungsrichtung des Roboters zeigt, rollen lässt und der Rollwinkel mit einem Beschleunigungssensor explizit erfasst werden kann. Die weiteren Module sind über aktive Drehgelenke miteinander verbunden und lassen sich seitlich abwinkeln, sind jedoch ziemlich steif gegen Rollbewegungen.
+Der Roboter wurde von der vorherigen Projektgruppe so programmiert, dass er sich autonom oder ferngesteuert auf einer Ebene bewegen und zusätzlich Kreisfahrten durchführen kann. Die Aufgabe dieser Arbeit ist die Regelung der Roboterbewegung im Rohr, sodass der Roboter Rollbewegungen und Kurven erkennt und diese ausregelt, sodass er an die unterste Stelle des Rohres zurückkehrt und an dieser Stelle mittig geradeaus weiterfährt. Zur Verfügung steht ein Sensor, der Winkelbeschleunigungen in allen Koordinatenrichtungen erfasst. Außerdem ist eine Simulation für die Roboterbewegung vorgegeben.
 
 \nocite{Burkert2017}
 \nocite{Kuther2018}
 
 
-\section{Inbetriebnahme des Roboters}
+\section{Aufbau des Roboters}
 \label{sec:inbetriebnahme}
-In diesem Kapitel wird der Aufbau des Roboters beschrieben, für den die modellierten Regler implementiert und getestet werden. Der Roboter besteht aus fünf Modulen, welche mit drei aktiven und einem passiven Gelenk miteinander verbunden sind. Da es sich hierbei um einen Prototypenbau handelt und eventuell Teile schnell abändern möchte, werden die Module in einem 3D-Druckverfahren aus Kunststoff hergestellt. 
+In diesem Kapitel wird der Aufbau des Roboters beschrieben, für den die modellierten Regler implementiert und getestet werden. Der schlangenartige Roboter besteht aus fünf Modulen, welche mit drei aktiven und einem passiven Gelenk miteinander verbunden sind. Im Rahmen dieser Arbeit wurde eine Änderung am Roboter vorgenommen. Das vordere Modul wurde gesplittet und mit einem passiven Gelenk versehen, damit das Rollverhalten und die gemessene Regelabweichung besser ausgewertet werden kann. Durch den Aufbau aus Kunststoffteilen konnte der Prototyp schnell mittels 3D-Drucker angepasst werden. 
 
 \begin{figure}[h]
 	\centering
@@ -73,43 +73,39 @@ In diesem Kapitel wird der Aufbau des Roboters beschrieben, für den die modellie
 	\label{fig:roboter}
 \end{figure}
 
-Der Roboter besitzt acht einzeln ansteuerbare Servomotoren für den Antrieb. Am Ende dieser Motoren sitzen Räder, welche ebenfalls im 3D-Druckverfahren hergestellt werden. Diese haben den Vorteil, dass sie eine sehr geringe Verschmutzung durch Abrieb in dem Teilchenbeschleuniger erzeugen. Ein Nachteil dieser Konstruktion ist die geringe Haftreibung, welche in unseren Versuchen zu beobachten ist. Zum Lenken werden die gleichen Servomotoren wie in den Antrieben benutzt. Ein Lithium-Polymer-Akku versorgt den gesamten Roboter mit Strom.
+Der Roboter besitzt acht einzeln ansteuerbare Servomotoren für den Antrieb. Am Ende dieser Motoren sitzen Räder, welche ebenfalls im 3D-Druckverfahren hergestellt wurden. Ein Nachteil dieser Konstruktion ist die geringe Haftreibung, welche in unseren Versuchen zu beobachten ist. Die drei für die Lenkung eingesetzten Servomotoren sind mit denen für den Antrieb identisch. Das ganze System wird mit einem Akku auf Lithium-Polymer Basis betrieben. 
 
-Die Datenverarbeitung der inertialen Messeinheit, sowie die Ansteuerung der Servomotoren und die Kommunikation mit dem Computer, übernimmt ein Mikrocontroller.
+Wie in Abbildung \ref{fig:roboter} beschrieben, besitzt der Roboter eine inertiale Messeinheit (IMU) als Sensorik. Die Datenverarbeitung dieser, sowie die Ansteuerung der Servomotoren und die Kommunikation mit dem Computer, übernimmt ein Mikrocontroller.
 
 \subsection{Mikrocontroller}
-Die Größe des zu durchfahrenden Strahlrohrs eines Ringbeschleunigers bedingt eine schmale Bauform des Roboters. Somit ist auch die Größe des einzusetzenden Mikrocontrollers eingeschränkt. In diesem Projekt wird von der Firma PJRC das Teensy 3.6 Board eingesetzt, welches über die geforderte Baubreite und Rechenleistung verfügt. Mit einer Abmessung von nur 6,1cm x 1,8cm passt es sehr gut in eines der Robotermodule hinein. Ein Arm Cortex M4 Prozessor mit 180 MHz und 32-bit Technologie ist verbaut. Dank einer vom Hersteller zur Verfügung gestellten Bibliothek kann das Teensy Board mithilfe von Arduino programmiert werden.\footnote{Online-Bibliothek verfügbar unter \url{https://www.pjrc.com/teensy/teensyduino.html}, zuletzt geprüft am 24.01.2019}
-
-Der ausgewählte Mikrocontroller besitzt eine Betriebsspannung von 3,3 V. Das bedeutet für die Ansteuerung der Servomotoren ist ein Pegelumsetzer (3,3 V auf 5 V) eingesetzt. Für die vollständigen Stromversorgung aller auf dem Roboter verbauten Geräte mit dem LiPo-Akku sind zusätzliche Spannungswandler für 3,3 V, 5 V und 7,4 V nötig.
+Die Größe des zu durchfahrenden Strahlrohrs eines Ringbeschleunigers bedingt eine schmale Bauform des Roboters. Somit ist auch die Größe des einzusetzenden Mikrocontrollers eingeschränkt. In diesem Projekt wird von der Firma PJRC das Teensy 3.6 Board eingesetzt, welches über die geforderte Baubreite und Rechenleistung verfügt. Mit einer Abmessung von nur 6,1cm x 1,8cm passt es sehr gut in eines der Robotermodule hinein. Ein Arm Cortex M4 Prozessor mit 180 MHz und 32-bit Technologie ist verbaut. Der ausgewählte Mikrocontroller besitzt eine Betriebsspannung von 3,3V. Das bedeutet für die Ansteuerung der Servomotoren ist ein Pegelumsetzer (3,3V auf 5V) eingesetzt. Für die vollständigen Stromversorgung aller auf dem Roboter verbauten Geräte mit dem LiPo-Akku sind zusätzliche Spannungswandler für 3,3V, 5V und 7,4V nötig.\cite{Pang2018}
 
 \subsection{Servomotoren}
-Wie schon im vorherigen Abschnitt beschrieben sind in dem Roboter elf baugleiche Servomotoren eingebaut. Acht dienen als Antrieb, während die anderen drei für die Lenkung sorgen. Die eingebauten Motoren kommen von der Firma ROBOTIS und heißen Dynamixel XL-320. Laut Datenblatt \cite{ROBOTIS} beträgt die Betriebsspannung 7,4 V. Bei gegebener Spannung liegt die maximale Drehzahl bei 114 \nicefrac{U}{min} und das maximale Drehmoment bei 0,39 Nm. Beides im lastfreien Betrieb. Für die Stromversorgung haben die Servos je zwei Anschlüsse. Ein weiterer Anschluss dient zur seriellen Kommunikation. Dieser ermöglicht neben einer unidirektionalen Kommunikation ein Half-Duplex-Modus. Somit lassen sich einige Parameter des internen Controllers auslesen.
 
-Die Motoren bieten zwei unterschiedliche Betriebsmodi. Zum einem den Wheel-Mode, zum Ansteuern der Räder, und zum anderem den Joint-Mode, zur Ansteuerung der Gelenke. An die Radmotoren wird ein Wert zwischen 0 und 1023 für eine Drehung gegen den Uhrzeigersinn gesendet, beziehungsweise 1024 bis 2047 für eine Drehung im Uhrzeigersinn. Hierbei steht der jeweils niedrige Wert für 0\% und der höhere Wert für 100\%. Die Gelenkmotoren bekommen Winkelangaben gesendet. Die Daten werden vom Mikrocontroller aufbereitet seriell an die Motoren weitergesendet. Hierzu steht eine Bibliothek bereit.\footnote{Online-Bibliothek verfügbar unter \url{https://github.com/hackerspace-adelaide/XL320}, zuletzt geprüft am 24.01.2019}
-\nocite{Pang2018}
+Die eingesetzten Servomotoren , Dynamixel XL-320, stammen von der Firma ROBOTIS. Hiervon werden je acht Stück für den Antrieb und je drei Stück für die Lenkung eingesetzt. Für den Antrieb werden die Motoren im Wheel-Mode und für die Lenkung im Joint-Mode betrieben. Ihre Betriebsspannung liegt bei 7,4V. Für die Ansteuerung der Motoren wird eine serielle Schnittstelle des Mikrocontrollers verwendet\cite{Pang2018}.
 
 \subsection{Inertiale Messeinheit}
-Zur Messung der Regelgröße wird eine inertiale Messeinheit (IMU) verwendet. Diese misst die Beschleunigung in alle Raumrichtungen und die Winkelbeschleunigungen um alle Koordinatenachsen. Durch Integration der Winkelbeschleunigungen können die Drehrate und die Lage bestimmt werden. Zum Einsatz in diesem Projekt kommt eine Messeinheit von iNEMO. Sie wird unter der Typenbezeichnung LSM6DS33 gelistet. Dieser Chip arbeitet im Performance-Mode mit bis zu 1,66 kHz und einer Auflösung von +/- 2G, beziehungsweise +/- 250 DPS.\cite{LSM6DS33} Da der Roboter mit einer niedrigen Geschwindigkeit durch einen Ringbeschleuniger fahren wird, kann davon ausgegangen werden, dass wir nicht mit großen linearen Beschleunigungen und großen Winkelbeschleunigungen konfrontiert werden. Somit ist die gewählte Auflösung ausreichend gewählt und entspricht der Standardeinstellung der Messeinheit.
+Zur Messung der Regelgröße wird eine inertiale Messeinheit verwendet. Diese misst die Beschleunigung in alle Raumrichtungen und die Winkelbeschleunigungen um alle Koordinatenachsen. Durch Integration der Winkelbeschleunigungen können die Drehrate und die Lage bestimmt werden. Zum Einsatz in diesem Projekt kommt eine Messeinheit von iNEMO. Sie wird unter der Typenbezeichnung LSM6DS33 gelistet. Dieser Chip arbeitet im Performance-Mode mit bis zu 1,66kHz und einer Auflösung von +/-2G, beziehungsweise +/-250 DPS \cite{LSM6DS33}. Da der Roboter mit einer niedrigen Geschwindigkeit durch einen Ringbeschleuniger fahren wird, kann davon ausgegangen werden, dass man nicht mit großen linearen Beschleunigungen und großen Winkelbeschleunigungen beaufschlagt wird. Somit ist die gewählte Auflösung ausreichend gewählt und entspricht der Standardeinstellung der Messeinheit.
 
-Zur Verbesserung der Genauigkeit des Beschleunigungssensors wird eine Biaskorrektur auf dem Mikrocontroller durchgeführt.\cite{Imer2016} Die Messeinheit kommuniziert mittels I2C mit dem Board. Hierfür wird ebenfalls eine Arduino-Bibliothek angeboten.\footnote{Online-Bibliothek verfügbar unter \url{https://github.com/pololu/lsm6-arduino}, zuletzt geprüft am 24.01.2019}
+Zur Verbesserung der Genauigkeit des Beschleunigungssensors wird eine Biaskorrektur auf dem Mikrocontroller durchgeführt\cite{Imer2016}. Die Messeinheit kommuniziert mittels I2C mit dem Board. 
 
 \subsection{Ansteuerung und Kommunikation}
-Für eine kabellose Kommunikation mit dem Roboter wird das Funkmodul XBee der Firma Digi International verwendet. Die Verbindung wird im 2,4 GHz Bereich hergestellt. Das auf dem Roboter verbaute Modul kommuniziert ebenfalls über eine serielle Schnittstelle mit dem Mikrocontroller. Für die Verbindung mit einen Computer wird ebenfalls ein XBee Funkmodul verwendet, welches per USB angeschlossen wird. Somit können die Berechnungen des Reglers auf dem Computer ausgeführt und die Lenkbefehle wieder zurück an den Roboter gesendet werden. Hierfür wird das Robot Operating System\footnote{Robot Operating System: \url{http://wiki.ros.org/de}} (ROS) verwendet. Die ROS Bibliotheken und Werkzeuge sind für die Verwendung mit linuxbasierten Betriebssystemen entwickelt. Somit lässt es sich nicht direkt auf dem Mikrocontroller installieren. Für die Kommunikation besteht eine Bibliothek.\footnote{ROS Serial: \url{http://wiki.ros.org/rosserial_python}, zuletzt geprüft am 24.01.2019}
+Für eine kabellose Kommunikation mit dem Roboter wird das Funkmodul XBee der Firma Digi International verwendet. Die Verbindung wird im 2,4GHz Bereich hergestellt. Das auf dem Roboter verbaute Modul kommuniziert über eine serielle Schnittstelle mit dem Mikrocontroller. Für die Verbindung mit einen Computer wird ebenfalls ein XBee Funkmodul verwendet, welches per USB angeschlossen wird. Somit können die Berechnungen des Reglers auf dem Computer ausgeführt und die Lenkbefehle wieder zurück an den Roboter gesendet werden. Hierfür wird das Robot Operating System\footnote{Robot Operating System: \url{http://wiki.ros.org/de}} (ROS) verwendet. Die ROS Bibliotheken und Werkzeuge sind für die Verwendung mit linuxbasierten Betriebssystemen entwickelt. Somit lässt es sich nicht direkt auf dem Mikrocontroller installieren \cite{Pang2018}.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=8.5cm,height=5.5cm,keepaspectratio]{./pics/Kommunikation.png}
-	\caption{Kommunikationsstruktur des Roboters. Vom Computer inklusive Kinematik- und Reglermodell, über ROS und XBee Kommunikation und der Ansteuerung von Sensorik und Aktorik auf dem Mikrocontroller.}
+	\caption{Kommunikationsstruktur des Roboters. Vom Computer inklusive Kinematik- und Reglermodell, über ROS und XBee Kommunikation und der Ansteuerung von Sensorik und Aktorik auf dem Mikrocontroller\cite{Pang2018}}.
 	\label{fig:Kommunikation}
 \end{figure}
 
-In Abbildung \ref{fig:Kommunikation} wird die Kommunikations Struktur verdeutlicht. Hier ist zu erkennen, dass das Modell für die Regelung auf dem Computer ausgeführt wird und dessen Ergebnisse unter Verwendung von ROS, ROS-Serial und XBee auf den Mikrocontroller übertragen werden. Dort werden anschließend die passenden Steuerungsbefehle an die Servomotoren ausgegeben.
+In Abb. \ref{fig:Kommunikation} wird die Kommunikationsstruktur verdeutlicht. Hier ist zu erkennen, dass das Modell für die Regelung auf dem Computer ausgeführt wird und dessen Ergebnisse unter Verwendung von ROS, ROS-Serial und XBee auf den Mikrocontroller übertragen werden. Dort werden anschließend die passenden Steuerungsbefehle an die Servomotoren ausgegeben \cite{Pang2018}.
 
 \subsection{Simulation und Teststrecke}
-Zum Testen der implementierten Reglermodelle stehen zwei Testumgebungen bereit. Einerseits eine Simulationsumgebung mit Gazebo\footnote{Roboter Simulation mit Gazebo: \url{http://gazebosim.org/}}, andererseits eine von uns aufgebaute reale Teststrecke. Diese beiden Versionen werden in den folgenden Abschnitten kurz Vorgestellt. \\
+Zum Testen der implementierten Reglermodelle stehen zwei Testumgebungen bereit. Einerseits eine Simulationsumgebung mit Gazebo\footnote{Roboter Simulation mit Gazebo: \url{http://gazebosim.org/}}, andererseits eine im Rahmen dieser Arbeit aufgebauten realen Teststrecke. Diese beiden Versionen werden in den folgenden Abschnitten kurz Vorgestellt.\\
 
 \subsubsection{Simulation}
-Zu Beginn der Projektarbeit wurde eine Simulationsumgebung bereitgestellt, welche den vollständigen Roboter und ein gebogenes Rohr beinhaltet. Diese Simulation ist sehr realitätsnah und kann für schnelles Testen der Reglerimplementierungen genutzt werden. Die Simulation beinhaltet, wie das original, elf Motoren (acht für den Antrieb und drei für die Gelenke), und ein passives Gelenk. Ebenfalls wird eine inertiale Messeinheit simuliert. Somit kann man mit kleinen Anpassungen an die Schnittstelle, dieselben Regleralgorithmen in der Realität, wie auch in der Simulation, testen und dementsprechend Daten aufzeichnen. Somit ist gewährleistet, dass der Roboter immer im selben Rohr, mit dem selben Anfangszustand, startet.
+Zu Beginn der Projektarbeit wurde eine Simulationsumgebung bereitgestellt, welche den vollständigen Roboter und ein gebogenes Rohr beinhaltet. Diese Simulation ist sehr realitätsnah und kann für schnelles Testen der Reglerimplementierungen genutzt werden. Die Simulation beinhaltet, wie das original, elf Motoren (acht für den Antrieb und drei für die Gelenke), und ein passives Gelenk. Ebenfalls wird eine inertiale Messeinheit simuliert. Somit können mit kleinen Anpassungen an die Schnittstelle, dieselben Regleralgorithmen in der Realität, wie auch in der Simulation, getestet werden und dementsprechend Daten aufzeichnen. Dies gewährleistet immer gleichbleibende Bedingungen und eine längere Fahrt als in der Realität.
 
 \begin{figure}[h]
 	\centering
@@ -119,15 +115,15 @@ Zu Beginn der Projektarbeit wurde eine Simulationsumgebung bereitgestellt, welch
 \end{figure}
 
 \subsubsection{Teststrecke}
-Zum Testen der Regelung steht leider nicht ein Originalrohr aus dem Teilchenbeschleuniger zur Verfügung. Hierbei ist auch zu beachten, dass der Roboter universell in verschiedenen Rohren eingesetzt werden soll und dass sich der Rohrradius im Teilchenbeschleuniger auch ändert. Daher ist es nicht sehr wichtig das Rohr exakt nachzubilden. Als Rohrersatz dient daher ein flexibles Lüftungsrohr, welches längs der Rohrachse halbiert wird. Dadurch kann man beobachten, wie sich der Roboter verhält. Zusätzlich ermöglicht das Aufschneiden ein Aufbiegen des Rohres und somit eine Veränderung des Rohrradius. Dieses Setup wurde bereits zu Beginn der Arbeit aufgebaut. Die Teststrecke besteht aus einem geraden Abschnitt am Anfang des Rohres, um zu testen, wie sich der Roboter beim Einschalten verhält, besonders dann, wenn er nicht parallel zur Rohrachse eingesetzt wird. Danach folgt zuerst eine Rechtskurve, gefolgt on einer Linkskurve, um die Kurvenfahrt zu untersuchen. Dabei wird der Kurvenradius wesentlich enger gewählt als im original um den Roboter unter verschärften Bedingungen testen zu können.
+Zum Testen der Regelung steht kein Teil des Originalrohrs aus dem Teilchenbeschleuniger zur Verfügung. Hierbei ist auch zu beachten, dass der Roboter universell in verschiedenen Rohren eingesetzt werden soll und sich somit auch der Rohrradius variiert. Daher ist es nicht wichtig das Rohr exakt nachzubilden. Als Rohrersatz dient ein flexibles Lüftungsrohr, welches längs der Rohrachse halbiert wurde. Dadurch wird beobachtet, wie sich der Roboter beim Fahren verhält. Zusätzlich ermöglicht das Aufschneiden ein Aufbiegen des Rohres und somit eine Veränderung des Rohrradius. Dieses Setup wurde bereits zu Beginn der Arbeit aufgebaut. Die Teststrecke besteht aus einem geraden Abschnitt am Anfang des Rohres, um zu testen, wie sich der Roboter beim Einschalten verhält, besonders dann, wenn er nicht parallel zur Rohrachse eingesetzt wird. Danach folgt zuerst eine Rechtskurve, gefolgt von einer Linkskurve, um die Kurvenfahrt zu untersuchen. Dabei wird der Kurvenradius wesentlich enger gewählt als im original um den Roboter unter verschärften Bedingungen testen zu können. Diese Kurven sind zwar mit der Sensorik besser zu detektieren, durch die Größere Auslenkung, sind aber somit auch größere Störrgrößen und führen zu größeren Auslenkung, was den Vergleich zwischen Theorie und Praxis erschwert.
 
 Bedingt durch die Starken Unebenheiten des Lüftungsrohres und dem niedrigen Reibungskoeffizienten, zwischen Rohr und Räder, wurde eine Anti-Rutsch Folie in das Rohr geklebt. Diese verhindert ein Rutschen des Roboters im Rohr. \\
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Teststrecke.jpg}
-	\caption{Teststrecke mit geradem Anteil und erster Kurve. Gut zu sehen ist die eingeklebte Anti-Rutsch-Folie zur Verbesserung der Haftreibung.}
-	\label{fig:simulation}
+	\caption{Teststrecke mit geradem Anteil und erster Kurve. Gut zu sehen ist die eingeklebte Anti-Rutsch-Folie zur Verbesserung der Haftreibung. \textbf{WAS FEHLT HIER???}}
+	\label{fig:teststrecke}
 \end{figure}
 
 \section{Modellbildung}
@@ -143,7 +139,12 @@ Zunächst wird das Rohr als ein kreisförmiger Zylinder angenommen. Das Inertialsy
 	\label{fig:rohrkoordinaten}
 \end{figure}
 
-Um die Position des Roboters im Rohr zu beschreiben, gibt es verschiedene Möglichkeiten. Da die Position in z-Richtung für die Regelung nicht relevant ist und sich der Roboter immer auf der Rohroberfläche befindet, genügt eine Variable als Minimalkoordinate um die Position des Roboters zu beschreiben. Abbildung \ref{fig:minimalkoordinaten} zeigt drei Mögliche Variablen. Die möglichen Variablen sind die Auslenkung in y-Richtung $y_{Roboter}$, Die Kreisbogenlänge $b$ zwischen dem untersten Punkt im Rohr und bis zum Roboter und der Winkel $\alpha$. $\alpha$ ist der Winkel zwischen der x-Achse und einer Verbindungslinie vom Mittelpunkt des Rohrquerschnittes zum Mittelpunkt der vorderen Radachse. Zur Berechnung der y-Auslenkung werden trigonometrische Funktionen verwendet. Um die dadurch entstehenden Nichtlinearitäten zu vermeiden wird sich gegen diese Variable entschieden. Der Winkel $\alpha$ entspricht näherungsweise dem Neigungswinkel $\varphi$, der von der IMU gemessen werden kann (Vergleiche Sektion \ref{sec:messung}). Deshalb wird sich im mathematischen Modell für diesen Winkel als Regelgröße entschieden. Ziel der Regelung ist es, $\alpha$ zu null zu bringen, damit sich der Roboter an unterster Stelle im Rohr befindet. Der Zustand des Roboters wird zusätzlich durch den Gierwinkel beschrieben. Dieser stellt den Winkel zwischen der z-Achse (Rohrachse) und der Bewegungsrichtung des Roboters an.
+Um die Position des Roboters im Rohr zu beschreiben, gibt es verschiedene Möglichkeiten. Da die Position in z-Richtung für die Regelung nicht relevant ist und sich der Roboter immer auf der Rohroberfläche befindet, genügt eine Variable als Minimalkoordinate um die Position des Roboters zu beschreiben. Abbildung \ref{fig:minimalkoordinaten} zeigt drei Mögliche Variablen. Die möglichen Variablen sind die Auslenkung in y-Richtung $y_{Roboter}$, Die Kreisbogenlänge $b$ zwischen dem untersten Punkt im Rohr und bis zum Roboter und der Winkel $\alpha$. $\alpha$ ist der Winkel zwischen der x-Achse und einer Verbindungslinie vom Mittelpunkt des Rohrquerschnittes zum Mittelpunkt der vorderen Radachse. Die y-Auslenkung wird nach
+\begin{equation}
+	y_{Roboter} = r_{Rohr}\sin(\alpha)
+	\label{y_auslenkung}
+\end{equation}
+berechnet. Um die dadurch entstehenden Nichtlinearitäten zu vermeiden wird sich gegen diese Variable entschieden. Der Winkel $\alpha$ entspricht näherungsweise dem Rollwinkel $\varphi$, der von der IMU gemessen werden kann (Vergleiche Sektion \ref{sec:messung}). Deshalb wird sich im mathematischen Modell für diesen Winkel als Regelgröße entschieden. Ziel der Regelung ist es, $\alpha$ zu null zu bringen, damit sich der Roboter an unterster Stelle im Rohr befindet. Der Zustand des Roboters wird zusätzlich durch den Gierwinkel beschrieben. Dieser stellt den Winkel zwischen der z-Achse (Rohrachse) und der Bewegungsrichtung des Roboters an.
 
 \begin{figure}[h]
 	\centering
@@ -157,7 +158,7 @@ Als Stellgröße für das System kann der Lenkwinkel $\delta_{1}$ des Roboters vorg
 	\dot{\psi} = \frac{\tan(\delta_1)}{L_{P_1J_1}}v_{Roboter}
 	\label{eq:psi_punkt}
 \end{equation}
-Durch Integration ergibt sich die Zustandsvariable $\psi$.Die Geschwindigkeit des Roboters $v_{Roboter}$ liegt Konstant bei 0,05 \nicefrac{m}{s}. Im nächsten Schritt wird die Geschwindigkeit in einer Umfangs- und eine Axialkomponente bezogen auf den Rohrradius aufgeteilt. Diese berechnen sich nach:
+Durch Integration ergibt sich die Zustandsvariable $\psi$.Die Geschwindigkeit des Roboters $v_{Roboter}$ liegt Konstant bei 0,05 \nicefrac{m}{s}. Im nächsten Schritt wird die Geschwindigkeit in einer Umfangs- und eine Axialkomponente bezogen auf den Rohrradius aufgeteilt (Abbildung \ref{fig:geschwindigkeit}). Diese berechnen sich nach:
 \begin{equation}
 	v_u = v_{Roboter} \cdot \sin(\psi)
 	\label{eq:v_u}
@@ -166,6 +167,14 @@ Durch Integration ergibt sich die Zustandsvariable $\psi$.Die Geschwindigkeit de
 	v_z = v_{Roboter} \cdot \cos(\psi)
 	\label{eq:v_z}
 \end{equation}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=5cm,keepaspectratio]{./pics/Geschwindigkeiten.JPG}
+	\caption{Aufteilung der Geschwindigkeit}
+	\label{fig:geschwindigkeiten}
+\end{figure}
+
 Aus der Umfangskomponente  $v_u$ und dem Rohrradius $r_{Rohr}$ ergibt sich die Änderungsrate des Winkels $\alpha$ nach der Formel:
 \begin{equation}
 	\dot{\alpha} = \frac{v_u}{r_{Rohr}}
@@ -233,61 +242,208 @@ Die Position des Sensors ist oberhalb der ersten Radachse. Da der Roboter sehr s
 	\label{fig:passives_gelenk}
 \end{figure}
 
-
 \section{Regler}
 \label{sec:regler}
+\nocite{Adamy2016}
+Zur Regelung des Roboters werden verschiedene Regelungskonzepte und Auslegungsmethoden verwendet. Zum einen wird eine Ausgangsregelung in Form eines proportional-differential Reglers (PD-Regler) umgesetzt, der mittels dem Wurzelortskurvenverfahren ausgelegt wird. Zum anderen wird ein Zustandsregler verwendet, dessen Parameter nach zwei unterschiedlichen Verfahren bestimmt werden. Bei den Verfahren handelt es sich um Polplatzierung und die linear-quadratische Regelung (LQR). Da die Zustände nicht gemessen werden können, werden zusätzlich noch Beobachter verwendet. Dabei handelt es sich zum einen um einen Luenberger-Beobachter in Kombination mit einem Filter und zum anderen um ein Kalman-Filter. In den folgenden Unterkapiteln werden diese Konzepte erläutert.
 
-\section{Auswertung}
-\label{sec:auswertung}
+Für den PD-Regler ist auch eine Filterung der Messgröße erforderlich. Hierzu wird derselbe Filter wie für den Luenberger-Beobachter verwendet. Es handelt sich um einen Moving-Average aus den letzten 20 gemessenen Werten. 
 
-\section{Zusammenfassung}
+Die Stellgrößenbeschränkung ergibt sich durch die mangelnde Bewegungsfreiheit für den Roboter im Rohr und durch den maximalen Winkel, der an den Gelenken eingestellt werden darf. Wobei erstere wesentlich geringere Stellgrößen zulässt. Zur Festlegung dieses Wertes wird der Roboter per Hand durch die Teststrecke gesteuert und immer wieder dem maximalen Lenkwinkel ausgesetzt. Dieser wird per Durchlauf immer weiter erhöht. Wird der maximale Lenkwinkel zu groß, so kann es passieren, dass einzelne Module gegen die Rohrwand drücken, da die nötige Bewegungsfreiheit nicht gegeben ist. Daher wird der maximale Lenkwinkel auf 4° gesetzt. So wird verhindert, dass der eben beschriebene Fall eintritt und dadurch hohe  Belastungen auf die Gelenke wirken. Damit sollen durch diese Stellgrößenbeschränkung auch Schäden am Roboter vermieden werden. Für den Regler ergibt sich so nach Formel \ref{eq:psi_punkt} eine maximale Stellgröße von 0,233 \nicefrac{rad}{s}.
+
+\subsection{PD-Regler}
+\label{sec:pd-regler}
+Für eine Ausgangsregelung muss nur die Regelgröße eines Systems gemessen werden. Da der Gierwinkel, der eine Zustandsvariable des Systems darstellt, nicht gemessen werden kann (vgl. Sektion \ref{sec:modell}), bietet sich diese Regelmethode für das vorliegende System an. Durch die Linearisierung kann auf eine Großzahl an linearen Auslegemethoden zurückgegriffen werden. Letztendlich wird sich hier für das Wurzelortskurvenverfahren, da so die Dynamik des Systems besonders gut eingestellt werden kann. \cite{Adamy2016} Die Regelstrecke weist einen doppelten Pol in null auf und ist somit instabil. Deshalb wird ein differentieller Anteil (D-Anteil) im Regler benötigt, der das System stabilisiert. Die Störgröße, die durch die Kurvenfahrt entsteht, greift noch vor dem ersten Integrator der Regelstrecke an (Abbildung \ref{fig:gesamtmodell}). Daher ist ein integraler Anteil (I-Anteil) im Regler nötig um diese Störung stationär genau auszuregeln. Allerdings ist die Störung sehr klein gegenüber anderer Systemgrößen (vgl. Sektion \ref{sec:messung}), sodass der I-Anteil nicht benötigt wird.
+
+Bei der Auslegung mittels Wurzelortskurve (WOK) ist zu beachten, dass der Regler so eingestellt wird, dass die Stellgrößenbeschränkung eingehalten wird. Zudem darf der D-Anteil nicht zu groß gewählt werden, da dieser das Messrauschen verstärkt. Dadurch schwankt die Stellgröße zwischen ihren maximalen- und minimalen Wert und es ist keine Reaktion auf die Regelabweichung möglich. Je größer der Filter gewählt wird, desto größer kann auch der D-Anteil gewählt werden. Allerdings führt der Filter auch zu einer Zeitverzögerung, die mit der Filtergröße ansteigt. Daher darf auch der Filter nicht zu groß gewählt werden. Bei einer Filtergröße von 20 Werten, über die der Mittelwert berechnet wird, ist die Zeitverzögerung so gering, dass sie gegenüber den Zeitkonstanten des Systems vernachlässigt werden kann. Der Verstärkungsfaktor für den D-Anteil kann in diesem Fall bis ca. 4 erhöht werden, ohne dass diese Stellgröße große Sprünge aufweist. 
+
+Letztendlich ergibt sich der Regler zu
+\begin{equation}
+G_r(z) = \frac{279,4z - 276,6z}{z - 0,3116}
+\label{eq:pd}
+\end{equation}
+
+\subsection{Zustandsregler mittels Polplatzierung}
+\label{sec:polplatzierung}
+Bei der Auslegung eines Zustandsregler mittels Polplatzierung sind die Pole des geschlossenen Regelkreises frei wählbar, was dazu führt, dass die Dynamik des Regelkreises frei bestimmbar ist. Dazu werden allerdings auch mehr Informationen über den aktuellen Systemzustand benötigt. So werden wie in Abbildung \ref{fig:zustandsregler} zu sehen alle Zustandsgrößen zurückgeführt und mit dem Regelvektor $\underline{k}^T$ verstärkt. Die Stellgröße ergibt sich noch zusätzlich nach \cite{Adamy2016} aus der Vorverstärkung $\nu$ zu:
+\begin{equation}
+	u = \nu\omega - \underline{k}^T\underline{x}
+	\label{eq:zustandsregler}
+\end{equation}
+Da die Sollgröße $\omega$ allerdings null ist, entfällt der erste Teil der Gleichung und $u$ berechnet sich nur aus $\underline{k}^T\underline{x}$
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/zustandsregler.jpg}
+	\caption{Blockschaltbild eines Zustandsregler \cite{Adamy2016}}
+	\label{fig:zustandsregler}
+\end{figure}
+
+Um einen Zustandsregler zu benutzen muss noch die Steuerbarkeit nachgewiesen werden. Dafür muss die Steuerbarkeitsmatrix $M_S$  nach \cite{Adamy2016} vollen Rang haben, beziehungsweise eine Determinante ungleich null:
+\begin{equation}
+	\det(M_S) = \begin{vmatrix} \underline{b} & \underline{A} \: \underline{b} \end{vmatrix} = \begin{vmatrix} 0 & \frac{v_{Roboter}}{r_{Rohr}} \\ 1 & 0 \end{vmatrix} = - \frac{v_{Roboter}}{r_{Rohr}} \ne 0
+	\label{eq:steuerbarkeitsmatrix}
+\end{equation}
+Jetzt können die Eigenwerte des Systems unter der Berücksichtigung der Stellgrößenbeschränkung frei gewählt werden und daraus der Regelvektor $\underline{k}^T$ berechnet werden. Die Wunschpole werden beide auf -1 gelegt. Damit ergibt sich $\underline{k}^T$ zu $\begin{bmatrix}0,5 & 2\end{bmatrix}$. (Vgl. \cite{Adamy2016})
+
+Letztlich müsste für den Zustandsregler noch ein I-Anteil vorgeschaltet werden, um die Störung stationär genau auszuregeln. Hier gilt allerdings dasselbe wie bei dem PD-Regler in Sektion \ref{sec:pd-regler}. Die Störung ist so gering, dass der I-Anteil nicht benötigt wird.
+
+\subsection{Zustandsregler mittels LQR}
+\label{sec:lqr}
+Die LQR ist eine weitere Auslegungsmethode für Zustandsregler. Dafür wird ein Gütemaß für die Regelung berechnet, welches anschließend durch Bestimmung des Regelvektors $\underline{k}^T$ optimiert wird. Bei dem Gütemaß werden die Zustände quadriert und mit der Matrix $Q$ gewichtet. Zudem wird auch die Stellgröße quadriert und mit $R$ gewichtet. So hat man im Gütemaß eine Größe, mit der die später im Regler verwendete Stellgröße direkt bewerten kann und so auch bei der Auslegung direkt beeinflussen kann. Der weiteren werden durch das Quadrieren große Abweichungen von der Ruhelage besonders schlecht bewertet, was auch eine gute Beeinflussung des Zeitverhaltens mit sich bringt. Das quadratische Gütemaß berechnet sich nach \cite{Adamy2016} mit der Formel:
+\begin{equation}
+	J = \int_{0}^{\infty}{\underline{x}^T \, \underline{Q} \, \underline{x} + Ru^2}
+	\label{eq:lqr}
+\end{equation}
+Hierbei ist darauf zu achten, dass die Ruhelage in den Ursprung transformiert wird, sodass das Integral konvergiert. Mit Werten für $Q$ gleich Einheitsmatrix $I$ und 200 für $R$ ergibt sich der Regelvektor $\underline{k}^T$ zu $\begin{bmatrix}0,2752 & 0,0707\end{bmatrix}$.
+
+\subsection{Vollständiger Luenberger-Beobachter}
+\label{sec:luenberger}
+Um die Zustandsregler zu benutzen, ist es nötig, dass der komplette Zustandsvektor zur Verfügung steht. da wie bereits in Sektion \ref{sec:messung} erwähnt, die Zustandsgröße $\psi$ nicht gemessen werden kann, muss der Zustandsvektor mittels eines Beobachters bestimmt werden. Der Beobachter besteht aus dem in Sektion \ref{sec:modell} beschriebenen Modell der realen Regelstrecke. Dieses Modell wird mit denselben Stellgrößen wie die reale Strecke beaufschlagt und berechnet so den Zustandsvektor. Um Fehler durch Modellungenauigkeiten, Störungen und Anfangsbedingungen zu vermdeiden, werden die Ausgangsgrößen der realen Strecke und des Modells miteinander verglichen und der Fehler über den Gewichtungsfaktor $\underline{l}$ zurückgeführt. Abbildung \ref{fig:luenberger} veranschaulicht den Beobachter, wobei die mit Tilde gekennzeichneten Werte, die vom Beobachter berechnet werden.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/luenberger.jpg}
+	\caption{Luenberger-Beobachter \cite{Adamy2016}}
+	\label{fig:luenberger}
+\end{figure}
+
+Über den Vektor $\underline{l}$ können die Eigenwerte des Beobachters festgelegt werden. Diese sollen laut Faustformel \cite{Adamy2016} das 5-10 fache weiter links in der komplexen Ebene liegen als die dominanten Eigenwerte des geschlossenen Regelkreise, damit mögliche Fehler vom Beobachter schnell gegen null konvergieren. Allerdings dürfen die Pole auch nicht zu weit links liegen, da der Beobachter sonst differenzierendes verhalten aufweist. Dies ist besonders bei verrauschten Messsignalen problematisch, da so das Rauschen verstärkt wird. Bei dem in Sektion \ref{sec:pd-regler} beschriebenen Filter können die Beobachterpole nicht weiter links liegen als bei -5 in der komplexen Ebene. Damit sind sie 5 mal schneller als der Regelkreis, der mittels Polplatzierung ausgelegt wird. Der Vektor $\underline{l}$ wird über das Verfahren der Polplatzierung berechnet und ergibt sich zu $\begin{bmatrix}10 & 50\end{bmatrix}$.
+
+\subsection{Reduzierter Beobachter}
+\label{sec:reduziert}
+Der reduzierte Beobachter berechnet nicht den kompletten Zustandsvektor. Er berechnet nur die Zustandsgrößen, die nicht gemessen werden können. Dazu benutzt er neben der Stellgröße auch die gemessenen Zustandsgrößen, um zum einen den Schätzfehler zu minimieren und zum anderen möglichst viel Information über den Systemzustand zu nutzen. In diesem Fall wird die Zustandsgröße $\psi$ geschätzt, während die Auslenkung $\alpha$ gemessen werden kann. Allerdings macht das Rauschen hier Probleme, sodass die Ergebnisse, die mit dem vollständigen Luenberger-Beobachter erzielt werden, besser sind. 
+
+\subsection{Diskretes Kalman-Filter}
+\label{sec:kalman}
+Für den Entwurf von Beobachtern wird davon ausgegangen, dass Zustands- und Ausgangsvariablen keinem Rauschen unterlagen. Da das Rauschen klein ist, wurde es bisher vernachlässigt. Wenn jedoch Systemrauschen und Messrauschen vorliegen, kann man mittels eines Kalman-Filters  aus den verrauschten Ausgängen und den Eingangsgrößen den Zustandsvektor rekonstruieren. Das Kalman-Filter besitzt also die gleiche Struktur wie ein Luenberger-Beobachter. Auch hier wird der Schätzfehler $e = x - \tilde x$  mittels der Beobachtermatrix $K$ so beeinflusst, dass er asymptotisch gegen Null strebt. Die Matrix $K$ soll so bestimmt werden, dass die Rauscheinflüsse $\mu {n_{x,k}}$ und ${n_{y,k}}$ auf den geschätzten Zustandsvektor $\tilde{x}$ minimiert werden.
+
+Da die Bewegung des Fahrzeugs ebenfalls gestört (im Sinne von überlagertem, normalverteiltem Rauschen) ist, wird dies über die Prozess-Rausch-Kovarianzmatrix $Q$ eingebracht. Diese Matrix teilt dem Filter mit, wie der Systemzustand von einem zum nächsten Schritt springen kann. Die Matrix $Q$ ist Kovarianzsystemrauschen und kann nicht praktisch ermittelt werden. Wie üblich wird $Q$ hier als Einheitsmatrix gewählt.
+
+$R$ ist die Messkovarianzmatrix und gibt an, wie sehr man den Messwerten der Sensoren vertrauen kann. Da wir nur $\alpha $ messen, ist dies ein Skalar. Ist der Sensor sehr genau, so sollten hier kleine Werte eingesetzt werden. Ist der Sensor relativ ungenau, so sollten hier große Werte eingesetzt werden.\\
+
+Es wird das zeitdiskrete System
+
+\[\begin{array}{l}
+{x_{k + 1}} = {A_k} + {B_k}{u_k} + {n_{x,k}}\\
+{{\tilde y}_k} = {C_k}{x_k} + {D_k}{u_k} + {n_{y,k}}
+\end{array}\]
+
+betrachtet.\\
+
+Das Systemrauschen ${n_{x,k}}$ und das Messrauschen ${n_{y,k}}$ sind jeweils mittelwertfrei, in sich unkorreliert und besitzen die Kovarianzmatrizen.
+
+Das Systemrauschen beschreibt tatsächliche Änderungen des Zustandsvektors. Idealerweise würde der Schätzwert diesem Rauschen daher folgen. Das Messrauschen beschreibt Störungen, die der Schätzwert idealerweise ignorieren würde.
+
+\[\begin{array}{l}
+{Q_k} = E({n_{x,k}}n_{x,k}^T)\quad \quad E({n_{x,k}}) = 0\quad E({n_{x,k}}n_{x,l}^T) = 0\,\quad \forall k \ne l\quad \\
+{R_k} = E({n_{y,k}}n_{y,k}^T)\quad \quad E({n_{y,k}}) = 0\quad E({n_{y,k}}n_{y,l}^T) = 0\,\quad \forall k \ne l\\
+\end{array}\]
+
+Initialschätzwert:
+
+\[\begin{array}{l}
+E({{\hat x}_0}) = E({x_0})\\
+Cov({x_0} - {{\hat x}_0},{x_0} - {{\hat x}_0}) = {p_0}\\
+\end{array}\]
+
+Praediktionsschritt: Dieser Teil des Kalman-Filter wagt nun eine Vorhersage des Systemzustands in die Zukunft. 
+
+\[\begin{array}{l}
+{{\hat x}_{k + 1, - }} = {A_k}{{\hat x}_{k, + }} + {B_k}{u_k}\\
+{p_{k + 1, - }} = {A_k}{p_{k, + }}A_k^T + {Q_k}\\
+\end{array}\]
+
+Korrekturschritt: Liegen neue Messdaten vor, so besteht die Aufgabe darin, ausgehend von dem geschätzten Systemzustand ${{\hat x}_{k, - }}$, mit der bekannten Kovarianz ${p_{\Delta ,k, - }}$, des Schätzfehlers und den Messwerten ${{\tilde y}_k}$ mit der ${p_{y,k}}$ einen neuen Schätzwert ${{\hat x}_{k, + }}$ zu bestimmen, der biasfrei ist und dabei die minimale Varianz besitzt. ( vgl. Abbildung \ref{Kalman})
+
+\[\begin{array}{l}
+{k_k} = {p_{k, - }}c_k^T.{({c_k}{p_{k, - }}c_k^T + {R_k})^{ - 1}}\\
+{{\hat x}_{k, + }} = {{\hat x}_{k, - }} + {k_k}.({{\tilde y}_k} - ({c_k}{{\hat x}_{k, - }} + {D_k}{u_k}))\\
+{p_{k, + }} = (I - {k_k}{c_k}).{p_{k, - }}\\
+
+\end{array}\]
+
+\begin{figure}[h]
+	\includegraphics[width=8.5cm,keepaspectratio]{pics/kalman-filter.jpg}
+	\centering
+	\caption{Kalman Filter\label{Kalman}}
+\end{figure}
+
+\section{Bewertung}
+\label{sec:bewertung}
+
+\begin{table}[h]
+	\caption{reale Testfahrten}
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Regler & Maximalwert & Bleibende \\ 
+		& & Regelabweichung \\ \hline
+		PD KP=4 KD=0,5 & 15,9° & -0,9° \\ \hline
+		Zustandsregeler & 16,9° & 0,5° \\ \hline
+		Kalman-Filter & 17,3° & -4,8° \\ \hline
+	\end{tabular}
+\end{table}
+
+In dieser Sektion werden die Messergebnisse mit den entworfenen Reglern bewertet und miteinander verglichen. Dabei ist bei den realen Messwerten zu beachten, dass die reale Teststrecke wesentlich engere Kurven hat als die originale strecke im Teilchenbeschleuniger. Daher fallen auch die Testergebnisse wesentlich schlechter aus. Dies liegt vor allem daran, dass die engeren Kurven eine größere Störung mit sich bringen. Dennoch kann die Teststrecke mit jedem Regler vollständig durchfahren werden, ohne dass der Roboter umkippt oder stecken bleibt.
+
+Zur Bewertung werden die Sensormesswerte für den Rollwinkel ($\varphi$), die mit dem Average-Filter geglättet werden, verwendet.  Die Glättung erfolgt durch das Entfernen höherer Frequenzanteile, was zur Reduzierung des Rauscheinflusses dient. Im Ergebnis wird eine neue Datenpunktmenge erstellt, die aus den Mittelwerten gleich großer Untermengen der ursprünglichen Datenpunktmenge besteht. In der Signaltheorie wird der Moving-Average (gleitender Mittelwert) als Tiefpassfilter mit endlicher Impulsantwort (FIR-Tiefpass) beschrieben. Die Filterlänge des Average Filters wird bei den Tests der realen Strecke 10 und in der Simulation 20 gewählt. Da in der Testaufbau in der Realität zwei wesentlich engere Kurven enthält als die Simulation, wirkt sich die zeitliche Verzögerung durch den Filter in der Simulation nicht so stark aus. Dadurch wird das Rauchen in der Simulation besser unterdrückt und in der Realität lenkt der Roboter früher ein. 
+
+In Matlab werden die resultierenden Werte für $\alpha$ (vgl. Sektion \ref{sec:modell}) ebenfalls gefiltert um den Einfluss des Rauschens zu reduzieren, da sonst der Maximalwert zu stark vom Rauschen abhängt. Je größer die Filterlänge ist, desto besser wird das Rauschen unterdrückt. Allerdings werden auch schnelle Änderungen des Messwertes geglättet. Deshalb muss eine geeignete Filterlänge iterativ gewählt werden. Als Filtergröße in Matlab wird, unter Beachtung der Stellgrößenbeschränkung, 2800 gewählt.
+
+Überschwingweite und Ausregelzeit lassen sich nicht bestimmen, da der Roboter bei allen Reglern, außer beim Kalman-Filter, bei $\alpha = 0$ startet und nicht viel ausregeln muss. Aus diesem Grund wird das Störverhalten in der Kurve untersucht. Dabei werden die maximale Abweichung vom Sollwert Null sowie der Durchschnittswert der bleibenden Regelabweichung in der Kurve nach dem Einschwingen bestimmt.
+
+Für die bleibende Regelabweichung wurde der Mittelwert von den Werten nach dem Einschwingen in der Kurve gebildet. Dabei werden die Messwerte mit dem Average-Filter, jedoch ohne Matlab Filter, verwendet, da der Mittelwert direkt aus diesen Werten bestimmt werden kann. Bei der Aufnahme der Sensormesswerte in ROS wird zwar der Messprozess zu Beginn der Regelung gestartet, aber nach Durchfahren des Rohres manuell mittels Tastatureingabe gestoppt. Dadurch haben die Messungen eine variable Länge. Aus diesem Grund werden bei der Berechnung der bleibenden Regelabweichung 50 Werte nach dem Einschwingen nach der Störung, der Kruve, verwendet. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/Zeitverlaeufe_real.png}
+	\caption{Kalman-Filter}
+	\label{fig:zeitverl}
+\end{figure}
+
+Die kumulierte Häufigkeitsverteilung in Abbildung \ref{fig:kum} fasst alle aufgenommen Werte aus den Testverfahren zusammen. Sie gibt an, wie häufig, bezogen auf die gesamte Simulationsdauer, die auf der x-Achse aufgetragenen Abweichungen vom Sollwert unterschritten werden. Je höher der Greaph also verläuft, desto besser ist der entsprechende Regler zu bewerten. Es ist zu sehen, dass der PD-Regler hier am besten abschneidet. Des Weiteren ist zu erkennen, dass gerade sehr große Abweichungen nur selten überschritten werden. So wird ein $\alpha$ von 14° nur in 4\% der Fahrzeit überschritten. Bei den anderen beiden Reglern sind es circa 15\%.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm,keepaspectratio]{./pics/kum_haeuf_real.png}
+	\caption{Kumulierte Häufigkeit für Kalman-Filter, PD-Regler und Zustandsregler}
+	\label{fig:kum}
+\end{figure}
+
+\begin{table}[h]
+	\caption{Simulation}
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Regler & Maximalwert & Bleibende \\ 
+		& & Regelabweichung \\ \hline
+		PD KP=4 KD=0,5 & 1,9° & -0,1° \\ \hline
+		Zustandsregeler & 1,3° & -1,9° \\ \hline
+		Kalman-Filter & 0,8° & -1,3° \\ \hline
+	\end{tabular}
+\end{table}
+
+Da die Verläufe der Simulation nicht angemessen gefiltert und geplottet werden können, wird hier darauf verzichtet. Die Abweichungen vom Wert Null sind sehr klein und die Störungen werden schnell ausgeregelt. Dies kann auf den größeren Kurvenradius in der Simulation zurückgeführt werden. Bezüglich der maximalen Abweichung liefert das Kalman-Filter das beste Ergebnis. Dann kommt der Zustandsregler gefolgt vom PD-Regler. Alle Abweichungen sind in einem der Stellgrößenbeschränkung. Bezüglich der Regelabweichung liefert der PD-Regler das beste Ergebnis, gefolgt vom Kalman-Filter und dem Zustandsregler. Diese überschreiten die Stellgrößenbeschränkung ebenfalls nicht. Die Simulationsergebnisse sind deutlich besser, als die Ergebnisse der realen Strecke. Es kann dafür mehrere Gründe geben. Zum einem ist in der Simulation eine Kurve mit sehr großem Radius, also einer ganz leichten Krümmung, hinterlegt. Die reale Strecke besteht jedoch aus zwei hintereinander folgenden Kurven kleinerer Radien, wodurch das Ausregeln der Störung erschwert wird. Zum anderen ist der Reibfaktor zwischen den Rädern des Roboters und der Rohroberfläche in der Simulation nicht realitätsgetreu gesetzt, beziehungsweise verhält es sich aktuell nicht so.
+
+Alles in allem sind die erzielten Ergebnisse mit unterschiedlichen Reglern als gut zu bewerten.
+
+\section{Zusammenfassung und Ausblick}
 \label{sec:zus}
-Hier die wichtigsten Ergebnisse der Arbeit in 5-10 Sätzen zusammenfassen. Dies sollte keine Wiederholung des Abstracts oder der Einführung sein. Insbesondere kann hier ein Ausblick auf zukünftige Arbeiten gegeben werden.
+Abschließend lässt sich sagen, dass der Roboter ohne zu kippen oder stecken zu bleiben das Rohr auf der realen Teststrecke und in der Simulation durchfahren kann. Damit wird das Ziel der Arbeit erreicht. Bevor die Regler ausgelegt werden konnten, wurde noch ein großer Fokus auf die Entwicklung eines geeigneten Modells des Systems Schlangenroboter im Rohr gelegt. Zudem wurde sich mit der Wahl und Bestimmung einer geeigneten Regelgröße befasst. So könnte zusätzlich ein linearisiertes Modell erarbeitet werden, was die Reglerauslegung stark unterstützt hat.
 
+Weitere Verbesserungen können erzielt werden, indem weitere Informationen über das Rohr erfasst werden. So kann zum Beispiel eine Erkennung der Kurve, die durch sie entstehende Störung kompensiert werden. Weiterhin ist eine Bestimmung des Gierwinkels $\psi$ des Roboters sinnvoll, da so alle Zustandsgrößen bekannt sind und ein Zustandsregler ohne Beobachter entworfen werden kann.
 
-\appendices
+Auf Hardwareseite wäre eine Verbesserung der Kommunikationsschnittstelle zwischen Roboter und Computer wünschenswert. Bei einer Ausführungsrate von 100 Hz stößt die Datenübertragung für die Sensormesswerte und Ansteuerung der Aktorik schon an ihre Grenzen. Eine sichere Datenübertragung ist nur sicher zu stellen, indem man auf unnötigen Overhead achtet und diesen minimiert. Ebenso würde eine neue und hinreichende Kalibrierung der IMU nochmal eine Verringerung des Messrauschens bringen. Die bisher eingesetzte Kalibrierung bringt nicht den gewünschten Erfolg und wurde daher im Rahmen dieses Projektes nicht weiter berücksichtigt. 
+
+%\appendices
 %\section{Optionaler Titel}
-Anhang eins.
-\section{}
-Anhang zwei.
+%Anhang eins.
+%\section{}
+%Anhang zwei.
 
-
-\section{Richtlinien für das Verfassen wissenschaftlicher Arbeiten}
-\label{sec:richtlinien}
-Im Folgenden werden einige wichtige Richtlinien zusammengefasst. Die Aufzählung ist allerdings nicht erschöpfend.
-
-\begin{itemize}
- \item Klare Darstellung, was der Eigenanteil ist und was schon vorhanden war.
- \item Vorsicht vor Plagiaten: vollständige Quellenangaben, auch bei Bildern. Es sollte immer klar ersichtlich sein, was der Eigenanteil ist und was aus Quellen entnommen wurde.
- \item Bilder nicht 1:1 aus Quellen kopieren.
- \item Diskussion der Ergebnisse (Simulationen, Messungen, Rechnungen): Wurde das Ergebnis so erwartet? Wenn nein, was sind mögliche Gründe?
- \item Autoren: Als Autor sollte jede Person in Betracht gezogen werden, die wesentlich zur Arbeit beigetragen hat (siehe auch die Empfehlungen der DFG diesbezüglich, vgl.~\cite{DFG.1998}). Alle Personen mit kleinerem Beitrag (fachliche Hinweise, Beteiligung an Datensammlung etc.) können in der Danksagung oder einer Fußnote erwähnt werden.
-\item Formeln in den Satz einbetten und alle Variablen bei der ersten Verwendung im Text einführen. Beispiel:
- Für die Temperatur ergibt sich damit
- \begin{align*}
-  T(h) = K h^2,
- \end{align*}
- sie hängt quadratisch von der Höhe $h$ ab.
-\end{itemize}
-
-
-\section{Hinweise zur Notation}
-\label{sec:notation}
-\begin{itemize}
- \item Abkürzungen bei der ersten Verwendung erklären, z.B.: ``DFG (Deutsche Forschungsgemeinschaft)''.
- \item Formelzeichen konsistent benennen, nicht zwischen den Abschnitten umbenennen. Formelzeichen kursiv schreiben, z.B. Variable $a$.
- \item Auf korrekte Dimensionen und Einheiten achten. Für Einheiten das SI-System verwenden, z.B. das LaTeX-Paket \emph{units} oder \emph{SIunits}.
- \item Zahlen: Im Deutschen Komma als Dezimaltrennzeichen, im Englischen Punkt.
- \item Tabellen haben Überschriften, Diagramme haben Unterschriften.
- \item Diagramme: Achsenbeschriftungen hinreichend groß (insbesondere die Zahlen).
- \item Diagrammunterschriften sollen im Wesentlichen ausreichen, um das Diagramm zu verstehen.
- \item Indizes werden \emph{kursiv} gesetzt, wenn sie die Bedeutung von Variablen haben, ansonsten \textbf{normal}. Beispiele: $V_k, \ k=1,2,\ldots$ und $V_\mathrm{input}$.
-\end{itemize}
-
-
-\section*{Danksagung}
-Wenn ihr jemanden danken wollt, der Euch bei der Arbeit besonders
-unterstützt hat (Korrekturlesen, fachliche Hinweise,...), dann ist hier der dafür vorgesehene Platz.
+%\section*{Danksagung}
+%Wenn ihr jemanden danken wollt, der Euch bei der Arbeit besonders unterstützt hat (Korrekturlesen, fachliche Hinweise,...), dann ist hier der dafür vorgesehene Platz.
 
 
 %%% Literatur (mit bibtex, Empfehlung) %%%
@@ -314,19 +470,19 @@ hat seinen Bachelor Abschluss in Informatik an der TU Darmstadt gemacht und befi
 \begin{biography}
 [{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./pics/ComicKopf.eps}}] % hier ein Foto einbinden
 {Nursura Demircan}
-\blindtext
+hat ihren Bachelor Abschluss in Mechatronik an der TU Darmstadt gemacht und befindet sich derzeit im Master Studium mit der Vertiefung Allgemeine Mechatronik. Sie hat ein Praktikum in der Türkei in den Bereichen Entwicklung, Produktion und Qualitätssicherung gemacht. Im Weiteren hat sie das Praktikum Regelungstechnik I betreut. Zur Zeit ist sie als Werkstudentin in den Bereichen der Hard- und Softwareentwicklung tätig.
 \end{biography}
 
 \begin{biography}
-[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./pics/ComicKopf.eps}}] % hier ein Foto einbinden
+[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./pics/elias.jpg}}] % hier ein Foto einbinden
 {Elias Jargon}
-\blindtext
+studiert Mechatronik an der TU Darmstadt. Er hat seine Bachelorarbeit 2018 am Fachgebiet Fahrzeugtechnik im Bereich Fahrsimulation geschrieben. Zurzeit befindet er sich im Masterstudium in der Vertiefungsrichtung der Allgemeinen Mechatronik, in der er die Schwerpunkte auf Regelungstechnik und Robotik legt. 
 \end{biography}
 
 \begin{biography}
-[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./pics/ComicKopf.eps}}] % hier ein Foto einbinden
+[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{./pics/davood.jpeg}}] % hier ein Foto einbinden
 {Seyed Davood Mousavi}
-\blindtext
+hat seinen Bachelor Abschluss in Electrical Engineering im Fachgebiet Electronic an der Teheran Polytechnic University gemacht. Das Interesse für Mathematik und Robotik brachte ihn an die TU Darmstadt, wo er seinen Master in Automatisierungstechnik macht. 
 \end{biography}
 
 \vfill

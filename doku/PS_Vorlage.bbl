@@ -56,4 +56,8 @@ Life.augmented, ``{iNEMO LSM6DS33 Datasheet},'' pp. 1--77. [Online]. Available:
 S.~Imer, M.~Kempkes, S.~R. Klein, and M.~Schr{\"{o}}der, ``{Kalibrierung einer
   Inertial Measurement Unit ( IMU ) f{\"{u}}r ein UAV},'' pp. 1--11, 2016.
 
+\bibitem{Adamy2016}
+J.~Adamy, \emph{{Systemdynamik und Regelungstechnik II}}, 5th~ed.\hskip 1em
+  plus 0.5em minus 0.4em\relax Aachen: Shaker Verlag, 2016.
+
 \end{thebibliography}

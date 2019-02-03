@@ -17,14 +17,18 @@
 
   <node name="imu" pkg="testbot" type="complementary_filter.py" output="screen"/>
 
-  <node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>
+  <!--<node name="controller" pkg="testbot" type="controller_pid_with_anti_windup.py" output="screen"/>-->
   <!--<node name="controller" pkg="testbot" type="controller_zustandsregler_mit_beobachter.py" output="screen"/>-->
   <!--<node name="controller" pkg="testbot" type="controller_zustandsregler_reduziert_mit_beobachter.py" output="screen"/>-->
-  <!--<node name="controller" pkg="testbot" type="kalman_filter.py" output="screen"/>-->
+  <node name="controller" pkg="testbot" type="kalman_filter.py" output="screen"/>
 
   <node pkg="rosserial_xbee" name="xbee" type="xbee_network.py" args="/dev/ttyUSB0 1" output="screen" />
 
-  <node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/y /controller/y_avg $(find testbot)/rosbags"/>
+  <!-- Record PD-Controller -->
+  <!--<node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/y /controller/y_avg $(find testbot)/rosbags"/>-->
+
+  <!-- Record other Controllers -->
+  <node name="record" pkg="rosbag" type="record" args="record /controller/u /controller/alpha /controller/alpha_avg $(find testbot)/rosbags"/>
 
   <!-- Show in Rviz   -->
   <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find testbot)/launch/rviz_imu_config.rviz"/>-->

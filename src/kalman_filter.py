@@ -22,14 +22,14 @@ if rospy.has_param('/use_simulation'):
 	if SIMULATION:
 		OFFSET_Y = 0.0
 	else:
-		OFFSET_Y = 0.135
+		OFFSET_Y = 0.134
 else:
 	SIMULATION = False
-	OFFSET_Y = 0.135
+	OFFSET_Y = 0.134
 
 # get v_max
 if rospy.has_param('/v_max'):
-	V_MAX = 0.5 * rospy.get_param('/v_max')
+	V_MAX = rospy.get_param('/v_max')
 else:
 	V_MAX = 0.05
 
@@ -51,13 +51,13 @@ class Controller:
 		self.accel_y = 0.0
 		self.accel_z = 0.0
 
-		#Ricatti
-		#self.k1 = 0.2752
-		#self.k2 = 0.0707
-
-		#Ricatti schneller
+		#Polplatzierung
 		self.k1 = 0.4279
 		self.k2 = 0.1581
+
+		#Ricatti schneller
+		#self.k1 = 0.4279
+		#self.k2 = 0.1581
 
 		#Zustandsregler
 		#self.k1 = 0.4

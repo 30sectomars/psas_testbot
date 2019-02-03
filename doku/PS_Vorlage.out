@@ -1,5 +1,5 @@
 \BOOKMARK [1][-]{section.1}{Einf\374hrung}{}% 1
-\BOOKMARK [1][-]{section.2}{Inbetriebnahme des Roboters}{}% 2
+\BOOKMARK [1][-]{section.2}{Aufbau des Roboters}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{Mikrocontroller}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{Servomotoren}{section.2}% 4
 \BOOKMARK [2][-]{subsection.2.3}{Inertiale Messeinheit}{section.2}% 5
@@ -10,14 +10,17 @@
 \BOOKMARK [1][-]{section.3}{Modellbildung}{}% 10
 \BOOKMARK [1][-]{section.4}{Messung}{}% 11
 \BOOKMARK [1][-]{section.5}{Regler}{}% 12
-\BOOKMARK [1][-]{section.6}{Auswertung}{}% 13
-\BOOKMARK [1][-]{section.7}{Zusammenfassung}{}% 14
-\BOOKMARK [1][-]{section*.1}{Anhang I}{}% 15
-\BOOKMARK [1][-]{section*.2}{Anhang II: Richtlinien f\374r das Verfassen wissenschaftlicher Arbeiten}{}% 16
-\BOOKMARK [1][-]{section*.3}{Anhang III: Hinweise zur Notation}{}% 17
-\BOOKMARK [1][-]{section*.5}{Literaturverzeichnis}{}% 18
-\BOOKMARK [1][-]{biography.0}{Biographies}{}% 19
-\BOOKMARK [2][-]{biography.1}{Jens Balze}{biography.0}% 20
-\BOOKMARK [2][-]{biography.2}{Nursura Demircan}{biography.0}% 21
-\BOOKMARK [2][-]{biography.3}{Elias Jargon}{biography.0}% 22
-\BOOKMARK [2][-]{biography.4}{Seyed Davood Mousavi}{biography.0}% 23
+\BOOKMARK [2][-]{subsection.5.1}{PD-Regler}{section.5}% 13
+\BOOKMARK [2][-]{subsection.5.2}{Zustandsregler mittels Polplatzierung}{section.5}% 14
+\BOOKMARK [2][-]{subsection.5.3}{Zustandsregler mittels LQR}{section.5}% 15
+\BOOKMARK [2][-]{subsection.5.4}{Vollst\344ndiger Luenberger-Beobachter}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.5}{Reduzierter Beobachter}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.6}{Diskretes Kalman-Filter}{section.5}% 18
+\BOOKMARK [1][-]{section.6}{Bewertung}{}% 19
+\BOOKMARK [1][-]{section.7}{Zusammenfassung und Ausblick}{}% 20
+\BOOKMARK [1][-]{section*.1}{Literaturverzeichnis}{}% 21
+\BOOKMARK [1][-]{biography.0}{Biographies}{}% 22
+\BOOKMARK [2][-]{biography.1}{Jens Balze}{biography.0}% 23
+\BOOKMARK [2][-]{biography.2}{Nursura Demircan}{biography.0}% 24
+\BOOKMARK [2][-]{biography.3}{Elias Jargon}{biography.0}% 25
+\BOOKMARK [2][-]{biography.4}{Seyed Davood Mousavi}{biography.0}% 26
