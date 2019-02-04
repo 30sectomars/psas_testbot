@@ -1,26 +1,22 @@
 \BOOKMARK [1][-]{section.1}{Einf\374hrung}{}% 1
-\BOOKMARK [1][-]{section.2}{Aufbau des Roboters}{}% 2
-\BOOKMARK [2][-]{subsection.2.1}{Mikrocontroller}{section.2}% 3
-\BOOKMARK [2][-]{subsection.2.2}{Servomotoren}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.3}{Inertiale Messeinheit}{section.2}% 5
-\BOOKMARK [2][-]{subsection.2.4}{Ansteuerung und Kommunikation}{section.2}% 6
-\BOOKMARK [2][-]{subsection.2.5}{Simulation und Teststrecke}{section.2}% 7
-\BOOKMARK [3][-]{subsubsection.2.5.1}{Simulation}{subsection.2.5}% 8
-\BOOKMARK [3][-]{subsubsection.2.5.2}{Teststrecke}{subsection.2.5}% 9
-\BOOKMARK [1][-]{section.3}{Modellbildung}{}% 10
-\BOOKMARK [1][-]{section.4}{Messung}{}% 11
-\BOOKMARK [1][-]{section.5}{Regler}{}% 12
-\BOOKMARK [2][-]{subsection.5.1}{PD-Regler}{section.5}% 13
-\BOOKMARK [2][-]{subsection.5.2}{Zustandsregler mittels Polplatzierung}{section.5}% 14
-\BOOKMARK [2][-]{subsection.5.3}{Zustandsregler mittels LQR}{section.5}% 15
-\BOOKMARK [2][-]{subsection.5.4}{Vollst\344ndiger Luenberger-Beobachter}{section.5}% 16
-\BOOKMARK [2][-]{subsection.5.5}{Reduzierter Beobachter}{section.5}% 17
-\BOOKMARK [2][-]{subsection.5.6}{Diskretes Kalman-Filter}{section.5}% 18
-\BOOKMARK [1][-]{section.6}{Bewertung}{}% 19
-\BOOKMARK [1][-]{section.7}{Zusammenfassung und Ausblick}{}% 20
-\BOOKMARK [1][-]{section*.1}{Literaturverzeichnis}{}% 21
-\BOOKMARK [1][-]{biography.0}{Biographies}{}% 22
-\BOOKMARK [2][-]{biography.1}{Jens Balze}{biography.0}% 23
-\BOOKMARK [2][-]{biography.2}{Nursura Demircan}{biography.0}% 24
-\BOOKMARK [2][-]{biography.3}{Elias Jargon}{biography.0}% 25
-\BOOKMARK [2][-]{biography.4}{Seyed Davood Mousavi}{biography.0}% 26
+\BOOKMARK [1][-]{section.2}{Grundlagen}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Bewegung von R\344dern und Achsen im Rohr}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Simulation}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Reale Teststrecke}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Modellbildung}{}% 6
+\BOOKMARK [1][-]{section.4}{Messung}{}% 7
+\BOOKMARK [1][-]{section.5}{Regler}{}% 8
+\BOOKMARK [2][-]{subsection.5.1}{PD-Regler}{section.5}% 9
+\BOOKMARK [2][-]{subsection.5.2}{Zustandsregler mittels Polplatzierung}{section.5}% 10
+\BOOKMARK [2][-]{subsection.5.3}{Zustandsregler mittels LQR}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.4}{Vollst\344ndiger Luenberger-Beobachter}{section.5}% 12
+\BOOKMARK [2][-]{subsection.5.5}{Reduzierter Beobachter}{section.5}% 13
+\BOOKMARK [2][-]{subsection.5.6}{Diskretes Kalman-Filter}{section.5}% 14
+\BOOKMARK [1][-]{section.6}{Bewertung}{}% 15
+\BOOKMARK [1][-]{section.7}{Zusammenfassung und Ausblick}{}% 16
+\BOOKMARK [1][-]{section*.1}{Literaturverzeichnis}{}% 17
+\BOOKMARK [1][-]{biography.0}{Biographies}{}% 18
+\BOOKMARK [2][-]{biography.1}{Jens Balze}{biography.0}% 19
+\BOOKMARK [2][-]{biography.2}{Nursura Demircan}{biography.0}% 20
+\BOOKMARK [2][-]{biography.3}{Elias Jargon}{biography.0}% 21
+\BOOKMARK [2][-]{biography.4}{Seyed Davood Mousavi}{biography.0}% 22

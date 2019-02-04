@@ -11,49 +11,46 @@ Database file #1: Literatur.bib
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
-Warning--empty journal in Pang2018
-Warning--empty journal in Imer2016
 
 Done.
-You've used 7 entries,
+You've used 3 entries,
             4087 wiz_defined-function locations,
-            863 strings with 8386 characters,
-and the built_in function-call counts, 3550 in all, are:
-= -- 259
-> -- 67
-< -- 20
-+ -- 33
-- -- 12
-* -- 163
-:= -- 590
-add.period$ -- 14
-call.type$ -- 7
-change.case$ -- 7
-chr.to.int$ -- 51
-cite$ -- 9
-duplicate$ -- 267
-empty$ -- 311
-format.name$ -- 14
-if$ -- 783
+            842 strings with 7823 characters,
+and the built_in function-call counts, 1237 in all, are:
+= -- 83
+> -- 14
+< -- 2
++ -- 6
+- -- 3
+* -- 61
+:= -- 231
+add.period$ -- 6
+call.type$ -- 3
+change.case$ -- 3
+chr.to.int$ -- 6
+cite$ -- 3
+duplicate$ -- 98
+empty$ -- 124
+format.name$ -- 3
+if$ -- 258
 int.to.chr$ -- 0
-int.to.str$ -- 7
-missing$ -- 51
-newline$ -- 52
-num.names$ -- 7
-pop$ -- 156
+int.to.str$ -- 3
+missing$ -- 19
+newline$ -- 36
+num.names$ -- 3
+pop$ -- 61
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 251
+skip$ -- 85
 stack$ -- 0
-substring$ -- 115
-swap$ -- 172
-text.length$ -- 3
+substring$ -- 9
+swap$ -- 49
+text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 7
-warning$ -- 2
-while$ -- 20
-width$ -- 8
-write$ -- 84
-(There were 2 warnings)
+type$ -- 3
+warning$ -- 0
+while$ -- 4
+width$ -- 4
+write$ -- 49
