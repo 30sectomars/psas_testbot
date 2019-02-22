@@ -69,9 +69,6 @@ class Controller:
 		self.Kd = 0.5
 
 		self.dt = 1.0 / LOOP_RATE_IN_HZ
-		rospy.loginfo("dt = %f", self.dt)
-		rospy.loginfo(SIMULATION)
-		rospy.loginfo(OFFSET_Y)
 
 		self.delta1 = 0.0
 
@@ -103,12 +100,10 @@ class Controller:
 		self.e.insert(0, self.ref - self.y)
 		del self.e[-1]
 		self.e_sum += self.e[0]
-		#rospy.loginfo("e = %f", -self.e[0])
 
-		#I_anteil = self.dt * -self.e_sum
 		I_anteil = 0.0
 		D_anteil = (self.e[0] - self.e[1]) / self.dt
-		#D_anteil = 0.0
+
 		self.u_pre = self.Kp * self.e[0] + self.Ki * I_anteil + self.Kd * D_anteil
 
 		if self.u_pre > self.umax:
@@ -131,11 +126,6 @@ class Controller:
 
 		if SIMULATION:
 			self.delta1 = -self.delta1
-
-		#rospy.loginfo("avg y = %f", self.y)
-		#self.delta1 = 0.0
-		rospy.loginfo("y = %f",self.y_list[0])
-		#rospy.loginfo("delta1 = %f",self.delta1)
 
 	def publish_all(self):
 		#self.delta1_pub.publish(self.delta1)
@@ -160,9 +150,7 @@ class Controller:
 			self.accel_x = msg.linear_acceleration.x
 			self.accel_y = -msg.linear_acceleration.y
 			self.accel_z = -msg.linear_acceleration.z
-			#rospy.loginfo("lin_accel_x = %f", self.accel_x)
-			#rospy.loginfo("lin_accel_y = %f", self.accel_y)
-			#rospy.loginfo("lin_accel_z = %f", self.accel_z)
+
 		else:
 			self.gyro_x = msg.data[0]
 			self.gyro_y = msg.data[1]
@@ -170,10 +158,6 @@ class Controller:
 			self.accel_x = msg.data[3]
 			self.accel_y = msg.data[4]
 			self.accel_z = msg.data[5]
-
-		#self.y_list.insert(0,math.asin(self.accel_y))
-		#del self.y_list[-1]
-		#rospy.loginfo(self.y_list)
 
 	def shutdown(self):
 		msg = Twist()

@@ -51,17 +51,10 @@ class Controller:
 		self.accel_y = 0.0
 		self.accel_z = 0.0
 		
-		# neu
 		self.l1 = 0.59
 		self.l2 = 17.4
 		self.k1 = 0.2752
 		self.k2 = 0.0707
-
-		# gut
-		#self.l1 = 0.59
-		#self.l2 = 17.4
-		#self.k1 = 0.2752
-		#self.k2 = 0.0707
 
 		self.alpha = 0.0
 		self.alpha_list = [0.0] * FILTER_SIZE
@@ -106,10 +99,6 @@ class Controller:
 		if SIMULATION:
 			self.delta1 = -self.delta1
 
-		#self.delta1 = 0.0
-		#rospy.loginfo(self.delta1)
-		rospy.loginfo("alpha = %f", self.alpha)
-
 	def publish_all(self):
 		#self.delta1_pub.publish(self.delta1)
 		self.u_pub.publish(self.u)
@@ -145,7 +134,6 @@ class Controller:
 		msg.linear.x = 0.0
 		msg.angular.z = 0.0
 		self.vel_pub.publish(msg)
-		#rospy.loginfo("Controller is shut down")
 
 def talker():
 	rospy.init_node('controller', anonymous=True)

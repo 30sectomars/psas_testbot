@@ -134,9 +134,6 @@ class Controller:
 		self.delta1 = -math.tan(0.015 / V_MAX * self.u_avg) * 180 / math.pi
 		if SIMULATION:
 			self.delta1 = -self.delta1
-		#rospy.loginfo("u = %f", self.u)
-		rospy.loginfo("alpha = %f && delta = %f && u = %f", alpha, self.delta1, self.u_avg)
-		#rospy.loginfo("delta = %f", self.delta1)
 
 	def publish_all(self):
 		#self.delta1_pub.publish(self.delta1)
@@ -158,9 +155,7 @@ class Controller:
 			self.accel_x = msg.linear_acceleration.x
 			self.accel_y = -msg.linear_acceleration.y
 			self.accel_z = -msg.linear_acceleration.z
-			#rospy.loginfo("lin_accel_x = %f", self.accel_x)
-			#rospy.loginfo("lin_accel_y = %f", self.accel_y)
-			#rospy.loginfo("lin_accel_z = %f", self.accel_z)
+
 		else:
 			self.gyro_x = msg.data[0]
 			self.gyro_y = msg.data[1]
@@ -174,7 +169,6 @@ class Controller:
 		msg.linear.x = 0.0
 		msg.angular.z = 0.0
 		self.vel_pub.publish(msg)
-		#rospy.loginfo("Controller is shut down")
 
 def talker():
 	rospy.init_node('controller', anonymous=True)
